@@ -29,19 +29,12 @@ channel.queue_bind(exchange=exchange,queue='collection.updated',routing_key='col
 channel.queue_bind(exchange=exchange,queue='collection.deleted',routing_key='collection.deleted')
 
 def publishEvent(method, body):
+        if connection.is_open:
+                if not hasattr(connection, 'channel') or not connection.channel.is_open:
+                        channel = connection.channel()
+
         body = {#"id": 3, 
                 "user": "Testuser", #hier irgendwann der eingeloggte User
                 "title": "Testtitel", 
                 "message": "Dies ist eine Testnachricht. Blub"}
         channel.basic_publish(exchange=exchange, routing_key=method, body=json.dumps(body))
-        
-        
-
-# def callback(ch, method, properties, body):
-#         print(f" [x] Received {body}", flush=True)
-#         create_notification(ch, method, properties, body)
-      
-#channel.basic_consume(queue='collection.updated', on_message_callback=callback, auto_ack=True)
-#channel.start_consuming()
-    
-                    
