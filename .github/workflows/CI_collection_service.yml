@@ -2,7 +2,7 @@ name: Collection-Service
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "tbd" ]
 
   workflow_dispatch:
 
@@ -44,7 +44,7 @@ jobs:
         #file: backend//src/main/docker/Dockerfile.jvm
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: ghcr.io/thicnd/collection_service:latest
+        tags: ghcr.io/thi-cnd/collection_service:latest
   
 
     # - name: Run Tests
