@@ -6,7 +6,7 @@ rabbitmq_password = os.getenv('RABBITMQ_PASSWORD')
 rabbitmq_host = os.getenv('RABBITMQ_HOST')
 
 credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
-params = pika.ConnectionParameters(host=rabbitmq_host, credentials=credentials, heartbeat=120)
+params = pika.ConnectionParameters(host=rabbitmq_host, credentials=credentials)
 
 connection = pika.BlockingConnection(params)
 #params = pika.URLParameters('amqp://guest:guest@localhost:5672/')
@@ -29,12 +29,12 @@ channel.queue_bind(exchange=exchange,queue='collection.updated',routing_key='col
 channel.queue_bind(exchange=exchange,queue='collection.deleted',routing_key='collection.deleted')
 
 def publishEvent(method, body):
-        if connection.is_open:
-                if not hasattr(connection, 'channel') or not connection.channel.is_open:
-                        channel = connection.channel()
-
+        if connection.is_closed or not hasattr(connection, 'channel') or connection.channel.is_closed:
+                channel = connection.channel()
+                
         body = {#"id": 3, 
                 "user": "Testuser", #hier irgendwann der eingeloggte User
                 "title": "Testtitel", 
                 "message": "Dies ist eine Testnachricht. Blub"}
-        channel.basic_publish(exchange=exchange, routing_key=method, body=json.dumps(body))
+        properties = pika.BasicProperties(content_type='application/json', delivery_mode=2) # persistent messages
+        channel.basic_publish(exchange=exchange, routing_key=method, body=json.dumps(body), properties=properties)
