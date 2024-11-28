@@ -18,7 +18,7 @@ services:
   collection-service:
     build: .
     image: collection-service
-    command: python manage.py runserver 0.0.0.0:8000
+    #command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:

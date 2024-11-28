@@ -28,9 +28,9 @@ channel.queue_bind(exchange=exchange,queue='collection.created',routing_key='col
 channel.queue_bind(exchange=exchange,queue='collection.updated',routing_key='collection.updated')
 channel.queue_bind(exchange=exchange,queue='collection.deleted',routing_key='collection.deleted')
 
-def publishEvent(method, body):
-        if connection.is_closed or not hasattr(connection, 'channel') or connection.channel.is_closed:
-                channel = connection.channel()
+def publish_event(method, body):
+        #if connection.is_closed or not hasattr(connection, 'channel'):
+         #       channel = connection.channel()
                 
         body = {#"id": 3, 
                 "user": "Testuser", #hier irgendwann der eingeloggte User

@@ -2,14 +2,14 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from .models import Collection, Recipe, User
-from .rabbitmq_service import publishEvent
+from .rabbitmq_service import publish_event
 import json
 
 # Create your views here.
 
 invalid_json = "Invalid JSON"
 
-@csrf_exempt
+@csrf_exempt #CSRF-Token Überprüfung wird deaktiviert
 def collection_main(request, id=None):
     if request.method == 'GET':
         if id:
@@ -26,7 +26,7 @@ def collection_main(request, id=None):
         return HttpResponseBadRequest("Invalid request method")
     
 
-@csrf_exempt 
+@csrf_exempt #CSRF-Token Überprüfung wird deaktiviert
 def collection_edit_recipe(request, id):
     if request.method == 'POST':
         return collection_add_recipe(request, id)
@@ -65,7 +65,7 @@ def create_collection(request):
         collection.recipes.add(recipe)
      
     # Trigger event
-    publishEvent('collection.created', collection_to_dict(collection))
+    publish_event('collection.created', collection_to_dict(collection))
     return JsonResponse(collection_to_dict(collection))
 
 
@@ -81,7 +81,7 @@ def delete_collection(request, id):
         return HttpResponseForbidden("You are not authorized to delete this collection")
     
     # Trigger event
-    publishEvent('collection.deleted', collection_to_dict(collection))
+    publish_event('collection.deleted', collection_to_dict(collection))
     collection.delete()
     return JsonResponse({'status': 'deleted'})
 
@@ -108,7 +108,7 @@ def update_collection(request, id):
     
     collection.save()
     # Trigger event
-    publishEvent('collection.updated', collection_to_dict(collection))
+    publish_event('collection.updated', collection_to_dict(collection))
     return JsonResponse(collection_to_dict(collection))
 
 
