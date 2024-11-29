@@ -1,13 +1,12 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
-from src.models import Collection, Recipe, User
+from .src.models import Collection, Recipe, User
 import json
 
 # Create your tests here.
 
 class CollectionServiceTests(TestCase):
     def setUp(self):
-        self.client = Client()
         self.user = User.objects.create(username='testuser')
         self.recipe = Recipe.objects.create(name='Test Recipe')
         self.collection = Collection.objects.create(name='Test Collection', author=self.user, description='Test Description')
@@ -29,7 +28,7 @@ class CollectionServiceTests(TestCase):
             'recipes': [self.recipe.id]
         }
         response = self.client.post(reverse('collection_main'), data=json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(Collection.objects.count(), 2)
 
     def test_update_collection(self):
@@ -90,3 +89,9 @@ class CollectionServiceTests(TestCase):
         response = self.client.delete(reverse('edit_recipe', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.collection.recipes.count(), 0)
+
+    def test_get_collections_empty(self):
+        # Lösche alle vorhandenen Collections
+        Collection.objects.all().delete()
+        response = self.client.get(reverse('collection_main'))
+        self.assertEqual(response.status_code, 204)
