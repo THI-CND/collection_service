@@ -21,6 +21,9 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # noch implementieren, falls der cmd fehlschlägt
-CMD ["sh", "-c", "python manage.py migrate && python manage.py loaddata default_database.json && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
 
 #&& python manage.py test
+
+#logik implementieren, dass nur einmal defaultdaten geladen werden#
+#&& python manage.py loaddata default_database.json

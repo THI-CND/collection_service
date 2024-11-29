@@ -10,14 +10,18 @@ import json
 invalid_json = "Invalid JSON"
 
 @csrf_exempt #CSRF-Token Überprüfung wird deaktiviert
-def collection_main(request, id=None):
+def collection_main(request):
     if request.method == 'GET':
-        if id:
-            return get_collection(id)
-        else:
-            return get_collections()
+        return get_collections()
     elif request.method == 'POST':
         return create_collection(request)
+    else:
+        return HttpResponseBadRequest("Invalid request method")
+
+@csrf_exempt #CSRF-Token Überprüfung wird deaktiviert
+def collection_main_id(request, id=None):
+    if request.method == 'GET':
+        return get_collection(id)
     elif request.method == 'PUT':
         return update_collection(request, id)
     elif request.method == 'DELETE':
