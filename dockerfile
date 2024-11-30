@@ -9,7 +9,7 @@ WORKDIR /code
 
 RUN pip install --upgrade pip
 COPY  requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 #installationstools wie bspw pip soll beim Multistagebuild dann nicht im endcontainer vorhanden sein
 
@@ -21,9 +21,15 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # noch implementieren, falls der cmd fehlschlägt
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+#CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
 
 #&& python manage.py test
 
-#logik implementieren, dass nur einmal defaultdaten geladen werden#
-#&& python manage.py loaddata default_database.json
+CMD sh -c "\
+  echo 'Running migrations...' && \
+  python manage.py migrate && \
+  echo 'Checking if default data needs to be loaded...' && \
+  python manage.py shell -c \"exec(open('load_default_data.py').read())\" && \
+  echo 'Starting the Django server...' && \
+  python manage.py runserver 0.0.0.0:8000 \
+"

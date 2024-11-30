@@ -1,44 +1,12 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+from .rabbitmq_sender import create_message
 from .models import Collection, Recipe, User
-from .rabbitmq_service import publish_event
 import json
 
 # Create your views here.
 
 invalid_json = "Invalid JSON"
-
-@csrf_exempt #CSRF-Token Überprüfung wird deaktiviert
-def collection_main(request):
-    if request.method == 'GET':
-        return get_collections()
-    elif request.method == 'POST':
-        return create_collection(request)
-    else:
-        return HttpResponseBadRequest("Invalid request method")
-
-@csrf_exempt #CSRF-Token Überprüfung wird deaktiviert
-def collection_main_id(request, id=None):
-    if request.method == 'GET':
-        return get_collection(id)
-    elif request.method == 'PUT':
-        return update_collection(request, id)
-    elif request.method == 'DELETE':
-        return delete_collection(request, id)
-    else:
-        return HttpResponseBadRequest("Invalid request method")
- 
-
-@csrf_exempt #CSRF-Token Überprüfung wird deaktiviert
-def collection_edit_recipe(request, id):
-    if request.method == 'POST':
-        return collection_add_recipe(request, id)
-    elif request.method == 'DELETE':
-        return collection_remove_recipe(request, id)
-    else:
-        return HttpResponseBadRequest("Invalid request method")
-
 
 def get_collection(id):
     collection = get_object_or_404(Collection, id=id)
@@ -75,7 +43,7 @@ def create_collection(request):
         collection.recipes.add(recipe)
 
     # Trigger event
-    publish_event('collection.created', collection_to_dict(collection))
+    create_message(author, collection.name, 'collection.created')
     return JsonResponse(collection_to_dict(collection), status=201)
 
 
@@ -91,7 +59,7 @@ def delete_collection(request, id):
         return HttpResponseForbidden("You are not authorized to delete this collection")
     
     # Trigger event
-    publish_event('collection.deleted', collection_to_dict(collection))
+    create_message(author, collection.name, 'collection.deleted')
     collection.delete()
     return JsonResponse({'status': 'deleted'}, status=200)
 
@@ -121,7 +89,7 @@ def update_collection(request, id):
     
     collection.save()
     # Trigger event
-    publish_event('collection.updated', collection_to_dict(collection))
+    create_message(author, collection.name, 'collection.updated')
     return JsonResponse(collection_to_dict(collection), status=200)
 
 

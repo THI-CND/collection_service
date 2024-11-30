@@ -1,4 +1,4 @@
-import pika, json
+import pika
 import os
 
 rabbitmq_user = os.getenv('RABBITMQ_USER')
@@ -28,12 +28,12 @@ def connect():
         channel.queue_declare(queue='collection.deleted', durable=True)
         
         exchange = 'collection_service_exchange'
-        channel.exchange_declare(exchange=exchange, exchange_type='direct', durable=True)
+        channel.exchange_declare(exchange=exchange, exchange_type='topic', durable=True)
         
         # Nur zum Debuggen
-        channel.queue_bind(exchange=exchange, queue='collection.created', routing_key='collection.created')
-        channel.queue_bind(exchange=exchange, queue='collection.updated', routing_key='collection.updated')
-        channel.queue_bind(exchange=exchange, queue='collection.deleted', routing_key='collection.deleted')
+        channel.queue_bind(exchange=exchange, queue='collection.created', routing_key='collection.created.#')
+        channel.queue_bind(exchange=exchange, queue='collection.updated', routing_key='collection.updated.#')
+        channel.queue_bind(exchange=exchange, queue='collection.deleted', routing_key='collection.deleted.#')
         
         print("RabbitMQ connection and channel successfully created.")
     
@@ -50,23 +50,7 @@ def ensure_connection():
     elif not channel.is_open:
         print("RabbitMQ channel is closed. Open new channel...")
         channel = connection.channel()
-
-def publish_event(method, body):
-        ensure_connection()  # Stelle sicher, dass die Verbindung und der Kanal offen sind
-                
-        body = {#"id": 3, 
-                "user": "Testuser", #hier irgendwann der eingeloggte User
-                "title": "Testtitel", 
-                "message": "Dies ist eine Testnachricht. Blub"}
-        properties = pika.BasicProperties(content_type='application/json', delivery_mode=2) # persistent messages
         
-        try:
-                channel.basic_publish(exchange='collection_service_exchange', routing_key=method, 
-                                body=json.dumps(body), properties=properties)
-                print(f"Message successfully published: {method}")
-    
-        except pika.exceptions.AMQPConnectionError as e:
-                print(f"Error sending message to {method}: {e}")
-                # Versuche, die Verbindung und den Kanal erneut zu öffnen und Nachricht zu senden
-                connect()
-                publish_event(method, body) 
+    return channel
+
+connect()
