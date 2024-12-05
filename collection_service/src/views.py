@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponse
-from .rabbitmq_sender import create_message
+from .rabbitmq.rabbitmq_sender import create_message
 from .models import Collection, Recipe, User
 import json
 
