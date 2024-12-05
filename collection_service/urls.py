@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .src import views_controller
+from .src.views import CollectionView, CollectionIDView, CollectionRecipeView
 urlpatterns=[
-    path('collections/', views_controller.collection_main, name='collection_main'),
-    path('collections/<int:id>/', views_controller.collection_main_id, name='collection_main_id'),
-    path('collections/<str:id>/recipe/', views_controller.collection_edit_recipe, name='edit_recipe')
+    path('collections/', CollectionView.as_view(), name='collection_view'),
+    path('collections/<int:id>/', CollectionIDView.as_view(), name='collection_id_view'),
+    path('collections/<str:id>/recipe/', CollectionRecipeView.as_view(), name='collection_recipe_view')
 ]
