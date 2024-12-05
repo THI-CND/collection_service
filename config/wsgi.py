@@ -7,6 +7,8 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
 """
 
+# für Produktionsumgebungen; Stellt Schnittstelle von einfachen Web-Servern zu Django-App her (synchroner Code)
+
 import os
 
 from django.core.wsgi import get_wsgi_application
