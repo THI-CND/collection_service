@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import environ
-import os
 
 env = environ.Env()
 
@@ -20,7 +19,8 @@ env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 #Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+#environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -95,6 +95,11 @@ DATABASES = {
         'PORT': env("DB_PORT"),
     }
 }
+
+# RabbitMQ-Konfiguration
+RABBITMQ_USER = env("RABBITMQ_USER", default="guest")
+RABBITMQ_PASSWORD = env("RABBITMQ_PASSWORD", default="guest")
+RABBITMQ_HOST = env("RABBITMQ_HOST", default="localhost")
 
 
 # Password validation

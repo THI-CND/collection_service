@@ -5,8 +5,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      - RABBITMQ_USER=${RABBITMQ_USER}
-      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
     volumes:
       - rabbitmq_data:/data
     healthcheck:
@@ -23,8 +23,16 @@ services:
       - .:/code
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    environment:
+      DB_NAME=recipe
+      DB_USER=postgres
+      DB_PASSWORD=qweasdyxc
+      DB_HOST=postgres
+      DB_PORT=5432
+      RABBITMQ_USER=guest
+      RABBITMQ_PASSWORD=guest
+      RABBITMQ_HOST=rabbitmq
+      SECRET_KEY_DJANGO=django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
     restart: unless-stopped
     depends_on:
       postgres_db:
@@ -41,9 +49,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=recipe
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qweasdyxc
 
 volumes:
   postgres_data:

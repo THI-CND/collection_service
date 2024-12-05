@@ -1,12 +1,8 @@
 import pika
-import os
+from django.conf import settings
 
-rabbitmq_user = os.getenv('RABBITMQ_USER')
-rabbitmq_password = os.getenv('RABBITMQ_PASSWORD')
-rabbitmq_host = os.getenv('RABBITMQ_HOST')
-
-credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
-params = pika.ConnectionParameters(host=rabbitmq_host, credentials=credentials)
+credentials = pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD)
+params = pika.ConnectionParameters(host=settings.RABBITMQ_HOST, credentials=credentials)
 
 #params = pika.URLParameters('amqp://guest:guest@localhost:5672/')
 #connection = pika.BlockingConnection(params)
