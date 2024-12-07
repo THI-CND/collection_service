@@ -6,6 +6,7 @@ import json
 
 # Create your views here.
 #
+
 def create_collection(request):
     try:
         data = json.loads(request.body)
