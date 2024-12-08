@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye
+FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONBUFFERED=1
@@ -25,7 +25,12 @@ COPY . .
 
 #&& python manage.py test
 
+#Test Database
+ENV USE_TEST_DB=True
+
 CMD sh -c "\
+  echo 'Running tests...' && \
+  python manage.py test && \
   echo 'Running migrations...' && \
   python manage.py migrate && \
   echo 'Checking if default data needs to be loaded...' && \

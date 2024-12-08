@@ -13,11 +13,11 @@ class CollectionServiceTests(TestCase):
         self.collection.recipes.set([])
         
     def test_get_collections(self):
-        response = self.client.get(reverse('collection_main'))
+        response = self.client.get(reverse('collection_view'))
         self.assertEqual(response.status_code, 200)
 
     def test_get_collection(self):
-        response = self.client.get(reverse('collection_main', args=[self.collection.id]))
+        response = self.client.get(reverse('collection_id_view', args=[self.collection.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_create_collection(self):
@@ -27,7 +27,7 @@ class CollectionServiceTests(TestCase):
             'description': 'New Description',
             'recipes': [self.recipe.id]
         }
-        response = self.client.post(reverse('collection_main'), data=json.dumps(data), content_type='application/json')
+        response = self.client.post(reverse('collection_view'), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Collection.objects.count(), 2)
 
@@ -38,7 +38,7 @@ class CollectionServiceTests(TestCase):
             'description': 'Updated Description',
             'recipes': [self.recipe.id]
         }
-        response = self.client.put(reverse('collection_main', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
+        response = self.client.put(reverse('collection_id_view', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.collection.refresh_from_db()
         self.assertEqual(self.collection.name, 'Updated Collection')
@@ -51,7 +51,7 @@ class CollectionServiceTests(TestCase):
             'description': 'Updated Description',
             'recipes': [self.recipe.id]
         }
-        response = self.client.put(reverse('collection_main', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
+        response = self.client.put(reverse('collection_id_view', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 403)
         self.collection.refresh_from_db()
         self.assertNotEqual(self.collection.name, 'Updated Collection')
@@ -60,7 +60,7 @@ class CollectionServiceTests(TestCase):
         data = {
             'author': self.user.username
         }
-        response = self.client.delete(reverse('collection_main', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
+        response = self.client.delete(reverse('collection_id_view', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Collection.objects.count(), 0)
     
@@ -69,7 +69,7 @@ class CollectionServiceTests(TestCase):
         data = {
             'author': other_user.username
         }
-        response = self.client.delete(reverse('collection_main', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
+        response = self.client.delete(reverse('collection_id_view', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 403)
         self.assertEqual(Collection.objects.count(), 1)
 
@@ -77,7 +77,7 @@ class CollectionServiceTests(TestCase):
         data = {
             'recipe_id': self.recipe.id
         }
-        response = self.client.post(reverse('edit_recipe', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
+        response = self.client.post(reverse('collection_recipe_view', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.collection.recipes.count(), 1)
 
@@ -86,12 +86,12 @@ class CollectionServiceTests(TestCase):
         data = {
             'recipe_id': self.recipe.id
         }
-        response = self.client.delete(reverse('edit_recipe', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
+        response = self.client.delete(reverse('collection_recipe_view', args=[self.collection.id]), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.collection.recipes.count(), 0)
 
     def test_get_collections_empty(self):
         # Lösche alle vorhandenen Collections
         Collection.objects.all().delete()
-        response = self.client.get(reverse('collection_main'))
-        self.assertEqual(response.status_code, 204)
+        response = self.client.get(reverse('collection_view'))
+        self.assertEqual(response.status_code, 204) #204
