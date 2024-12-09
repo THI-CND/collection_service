@@ -49,4 +49,4 @@ def ensure_connection():
         
     return channel
 
-connect()
+#connect()

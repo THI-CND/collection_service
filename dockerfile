@@ -27,10 +27,14 @@ COPY . .
 
 #Test Database
 ENV USE_TEST_DB=True
+ENV SECRET_KEY_DJANGO=django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
+
+
+RUN python manage.py test
 
 CMD sh -c "\
-  echo 'Running tests...' && \
-  python manage.py test && \
+  #echo 'Running tests...' && \
+  #python manage.py test && \
   echo 'Running migrations...' && \
   python manage.py migrate && \
   echo 'Checking if default data needs to be loaded...' && \
