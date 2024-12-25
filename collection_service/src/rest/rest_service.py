@@ -1,11 +1,9 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from .rabbitmq.rabbitmq_sender import create_message
-from .models import Collection, Recipe, User
+from ..rabbitmq.rabbitmq_sender import create_message
+from ..models import Collection, Recipe, User
 import json
 
-# Create your views here.
-#
 
 def create_collection(request):
     try:

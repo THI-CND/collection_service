@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from django.urls import reverse
-from .src.models import Collection, Recipe, User
+from ..src.models import Collection, Recipe, User
 import json
 
 # Create your tests here.
