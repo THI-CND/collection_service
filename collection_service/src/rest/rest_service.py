@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from ..rabbitmq.rabbitmq_sender import create_message
-from ..models import Collection, Recipe, User
+from ..models import Collection
 import json
 
 
@@ -15,7 +15,8 @@ def create_collection(request):
     if not all(field in data for field in required_fields):
         return JsonResponse({"error": "Missing required fields: : author, name, or description"}, status=400)
 
-    author = get_object_or_404(User, username=data['author'])
+    #author = get_object_or_404(User, username=data['author'])
+    author = data['author']
     
     collection = Collection.objects.create(
         name=data['name'],
@@ -25,8 +26,8 @@ def create_collection(request):
     
     recipes = data.get('recipes', [])
     for recipe_id in recipes:
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        collection.recipes.add(recipe)
+        #recipe = get_object_or_404(Recipe, id=recipe_id)
+        collection.recipes.append(recipe_id)
 
     # Trigger event
     create_message(author, collection.name, 'collection.created')
@@ -40,7 +41,8 @@ def delete_collection(request, id):
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     
     collection = get_object_or_404(Collection, id=id)
-    author = get_object_or_404(User, username=data['author'])   
+    #author = get_object_or_404(User, username=data['author']) 
+    author = data['author']  
     if author != collection.author:
         return JsonResponse({"error": "Not authorized"}, status=403)
     
@@ -61,7 +63,8 @@ def update_collection(request, id):
         return JsonResponse({"error": "Missing required fields: : author, name, or description"}, status=400)
     
     collection = get_object_or_404(Collection, id=id)
-    author = get_object_or_404(User, username=data['author'])   
+    #author = get_object_or_404(User, username=data['author'])   
+    author = data['author']
     if author != collection.author:
         return JsonResponse({"error": "Not authorized"}, status=403)
     
@@ -71,8 +74,8 @@ def update_collection(request, id):
 
     recipes = data.get('recipes', [])
     for recipe_id in recipes:
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        collection.recipes.add(recipe)
+        #recipe = get_object_or_404(Recipe, id=recipe_id)
+        collection.recipes.append(recipe_id)
     
     collection.save()
     # Trigger event
@@ -91,9 +94,13 @@ def collection_add_recipe(request, id):
         return JsonResponse({"error": "Missing required field: recipe_id"}, status=400)
     
     collection = get_object_or_404(Collection, id=id)
-    recipe = get_object_or_404(Recipe, id=recipe_id)
-    collection.recipes.add(recipe)
-    return JsonResponse({"status": "added"}, status=200)
+    #recipe = get_object_or_404(Recipe, id=recipe_id)
+    if recipe_id not in collection.recipes:
+        collection.recipes.append(recipe_id)
+        collection.save()
+        return JsonResponse({"status": "added"}, status=200)
+    else:
+        return JsonResponse({"error": "Recipe already in collection"}, status=400)
 
 
 def collection_remove_recipe(request, id):
@@ -107,16 +114,10 @@ def collection_remove_recipe(request, id):
         return JsonResponse({"error": "Missing required field: recipe_id"}, status=400)
     
     collection = get_object_or_404(Collection, id=id)
-    recipe = get_object_or_404(Recipe, id=recipe_id)
-    collection.recipes.remove(recipe)
-    return JsonResponse({"status": "removed"}, status=200)
-
-
-# def collection_to_dict(collection):
-#     return {
-#         'id': collection.id,
-#         'name': collection.name,
-#         'author': collection.author.username,
-#         'description': collection.description,
-#         'recipes': [recipe.id for recipe in collection.recipes.all()]
-#     }
+    #recipe = get_object_or_404(Recipe, id=recipe_id)
+    if recipe_id in collection.recipes:
+        collection.recipes.remove(recipe_id)
+        collection.save()
+        return JsonResponse({"status": "removed"}, status=200)
+    else:
+        return JsonResponse({"error": "Recipe not found in collection"}, status=404)

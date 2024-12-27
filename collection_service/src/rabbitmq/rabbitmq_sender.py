@@ -18,27 +18,26 @@ def publish_event(event, message):
                 publish_event(event, message) 
 
 
-def create_message(user, name, event):
-    user_name = user.username
+def create_message(username, name, event):
     if event == 'collection.created':
         message = {#"id": 3, 
-            "user": user_name, #hier irgendwann der eingeloggte User
+            "user": username, #hier irgendwann der eingeloggte User
             "title": 'Collection created', 
-            "message": f'Hello {user_name}, your new collection "{name}" was created.'
+            "message": f'Hello {username}, your new collection "{name}" was created.'
         }
             
     elif event == 'collection.updated':
         message = {#"id": 3, 
-                "user": user_name, #hier irgendwann der eingeloggte User
+                "user": username, #hier irgendwann der eingeloggte User
                 "title": 'Collection updated', 
-                "message": f'Hello {user_name}, your collection "{name}" was updated.'
+                "message": f'Hello {username}, your collection "{name}" was updated.'
         }
         
     elif event == 'collection.deleted':
         message = {#"id": 3, 
-                "user": user_name, #hier irgendwann der eingeloggte User
+                "user": username, #hier irgendwann der eingeloggte User
                 "title": 'Collection deleted', 
-                "message": f'Hello {user_name}, your collection "{name}" was deleted.'
+                "message": f'Hello {username}, your collection "{name}" was deleted.'
         }
     
     publish_event(event, message)
