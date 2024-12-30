@@ -2,9 +2,9 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .models import Collection
-from .serializers import CollectionSerializer
-from .services import create_collection, update_collection, delete_collection, collection_add_recipe, collection_remove_recipe
+from ..models import Collection
+from ..serializers import CollectionSerializer
+from .rest_service import create_collection, update_collection, delete_collection, collection_add_recipe, collection_remove_recipe
 
 
 class CollectionView(APIView):

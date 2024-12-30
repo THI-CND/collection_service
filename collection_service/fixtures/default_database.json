@@ -1,43 +1,5 @@
 [
     {
-        "model": "collection_service.user",
-        "fields": {
-            "username": "Gerd"
-        }
-    },
-    {
-        "model": "collection_service.user",
-        "fields": {
-            "username": "Gustav"
-        }
-    },
-    {
-        "model": "collection_service.user",
-        "fields": {
-            "username": "Bernd"
-        }
-    },
-
-    {
-        "model": "collection_service.recipe",
-        "fields": {
-            "name": "Spaghetti Carbonara"
-        }   
-    },
-    {
-        "model": "collection_service.recipe",
-        "fields": {
-            "name": "Chicken Curry"
-        }
-    },
-    {
-        "model": "collection_service.recipe",
-        "fields": {
-            "name": "Pizza"
-        }
-    },
-
-    {
         "model": "collection_service.collection",
         "fields": {
             "name": "Meine Collection 1",
