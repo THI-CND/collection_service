@@ -47,8 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'collection_service',
     'rest_framework',
-    'collection_service'
+    'django_grpc_framework'
 ]
 
 MIDDLEWARE = [
@@ -112,7 +113,6 @@ else:
 RABBITMQ_USER = env("RABBITMQ_USER", default="guest")
 RABBITMQ_PASSWORD = env("RABBITMQ_PASSWORD", default="guest")
 RABBITMQ_HOST = env("RABBITMQ_HOST", default="localhost")
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
