@@ -3,6 +3,7 @@ from django_grpc_framework.services import Service
 from ..models import Collection
 from ..serializers import CollectionProtoSerializer
 from collection_service.src.grpc.collection_pb2 import ListCollectionResponse, DeleteCollectionResponse, ModifyRecipeResponse
+from collection_service.src.rabbitmq.rabbitmq_sender import create_message
 
 
 class CollectionService(Service):
@@ -28,6 +29,8 @@ class CollectionService(Service):
         })
         if serializer.is_valid(raise_exception=True):
             collection = serializer.save()
+            # Trigger event
+            create_message(collection.author, collection.name, 'collection.created')
             return serializer.message
         
     def UpdateCollection(self, request, context):
@@ -43,6 +46,9 @@ class CollectionService(Service):
             })
             if serializer.is_valid(raise_exception=True):
                 collection = serializer.save()
+                # Trigger event
+                print(collection.author, collection.name)
+                create_message(collection.author, collection.name, 'collection.updated')
                 return serializer.message
         except Collection.DoesNotExist:
             context.abort(grpc.StatusCode.NOT_FOUND, 'Collection not found')
@@ -53,6 +59,8 @@ class CollectionService(Service):
             if collection.author != request.author:
                 context.abort(grpc.StatusCode.PERMISSION_DENIED, 'Not authorized to delete this collection')
             collection.delete()
+            # Trigger event
+            create_message(collection.author, collection.name, 'collection.deleted')
             return DeleteCollectionResponse(status="Collection deleted")
         except Collection.DoesNotExist:
             context.abort(grpc.StatusCode.NOT_FOUND, 'Collection not found')
