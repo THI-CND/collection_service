@@ -22,7 +22,8 @@ services:
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Django REST-Server Port
+      - "50051:50051"  # gRPC-Server Port
     environment:
       DB_NAME=recipe
       DB_USER=postgres

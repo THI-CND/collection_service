@@ -19,5 +19,11 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include("collection_service.src.rest.urls")),
+    path('', include("collection_service.src.rest.urls"))
 ]
+
+def grpc_handlers(server):
+    import collection_service.src.grpc.collection_pb2_grpc as collection_pb2_grpc
+    from collection_service.src.grpc.grpc_service import CollectionService
+
+    collection_pb2_grpc.add_CollectionServiceServicer_to_server(CollectionService.as_servicer(), server)
