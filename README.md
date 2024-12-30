@@ -3,7 +3,7 @@
 ## Übersicht
 
 Der Collection Service verwaltet Sammlungen von Rezepten für Benutzer.
-
+____
 ## Schnittstellen
 
 ### REST API
@@ -48,7 +48,7 @@ Erstellt eine neue Sammlung.
 - Body: JSON-Objekt mit den Daten der neuen Sammlung.
 
 **Response:**
-- Status: 200 OK
+- Status: 201 OK
 - Body: Die erstellte Sammlung.
 
 **Beispiel:**
@@ -148,6 +148,75 @@ DELETE "http://localhost:8000/collections/1/recipe"
     "recipe_id": 1
 }
 ```
+____
+### gRPC API
+
+```java
+syntax = "proto3";
+
+package collection_service;
+
+service CollectionService {
+    rpc GetCollections (Empty) returns (ListCollectionResponse);
+    rpc GetCollectionById (CollectionRequest) returns (CollectionResponse);
+    rpc CreateCollection (CreateCollectionRequest) returns (CollectionResponse);
+    rpc UpdateCollection (UpdateCollectionRequest) returns (CollectionResponse);
+    rpc DeleteCollection (DeleteCollectionRequest) returns (DeleteCollectionResponse);
+    rpc AddRecipeToCollection (ModifyRecipeRequest) returns (ModifyRecipeResponse);
+    rpc RemoveRecipeFromCollection (ModifyRecipeRequest) returns (ModifyRecipeResponse);
+}
+
+message Empty {}
+
+message CollectionRequest {
+    int32 id = 1;
+}
+
+message CreateCollectionRequest {
+    string name = 1;
+    string author = 2;
+    string description = 3;
+    repeated int32 recipes = 4;
+}
+
+message UpdateCollectionRequest {
+    int32 id = 1;
+    string author = 2;
+    string name = 3;
+    string description = 4;
+    repeated int32 recipes = 5;
+}
+
+message DeleteCollectionRequest {
+    int32 id = 1;
+    string author = 2;
+}
+
+message ModifyRecipeRequest {
+    int32 id = 1;
+    int32 recipe_id = 2;
+}
+
+message CollectionResponse {
+    int32 id = 1;
+    string name = 2;
+    string author = 3;
+    string description = 4;
+    repeated int32 recipes = 5;
+}
+
+message ListCollectionResponse {
+    repeated CollectionResponse collections = 1;
+}
+
+message DeleteCollectionResponse {
+    string status = 1;
+}
+
+message ModifyRecipeResponse {
+    string status = 1;
+}
+```
 
 ### RabbitMQ Sender
 
@@ -187,21 +256,4 @@ Speichert Informationen über die Sammlungen.
 - `name` (str): Name der Sammlung.
 - `author` (str): Autor der Sammlung.
 - `description` (str): Beschreibung der Sammlung.
-
-##### recipes
-
-Speichert Informationen über die Rezepte.
-
-**Spalten:**
-- `id` (int, Primary Key): Eindeutige ID des Rezepts.
-- `title` (str): Titel des Rezepts.
-- `ingredients` (str): Zutaten des Rezepts.
-- `instructions` (str): Anweisungen zur Zubereitung.
-
-##### collection_recipes
-
-Verknüpft Sammlungen mit Rezepten (Many-to-Many Beziehung).
-
-**Spalten:**
-- `collection_id` (int, Foreign Key): ID der Sammlung.
-- `recipe_id` (int, Foreign Key): ID des Rezepts.
+- `recipes` (Array): Beinhaltete Rezepte.
