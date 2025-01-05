@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from ..rabbitmq.rabbitmq_sender import create_message
+from ..rabbitmq.rabbitmq_sender import publish_event
 from ..models import Collection
+from ..serializers import CollectionSerializer
 import json
 
 
@@ -30,7 +31,8 @@ def create_collection(request):
         collection.recipes.append(recipe_id)
 
     # Trigger event
-    create_message(author, collection.name, 'collection.created')
+    collection_data = CollectionSerializer(collection).data
+    publish_event('collection_created', collection_data)
     return JsonResponse({"id": collection.id}, status=201)
 
 
@@ -47,7 +49,8 @@ def delete_collection(request, id):
         return JsonResponse({"error": "Not authorized"}, status=403)
     
     # Trigger event
-    create_message(author, collection.name, 'collection.deleted')
+    collection_data = CollectionSerializer(collection).data
+    publish_event('collection_deleted', collection_data)
     collection.delete()
     return JsonResponse({"status": "deleted"}, status=200)
 
@@ -79,7 +82,8 @@ def update_collection(request, id):
     
     collection.save()
     # Trigger event
-    create_message(author, collection.name, 'collection.updated')
+    collection_data = CollectionSerializer(collection).data
+    publish_event('collection_updated', collection_data)
     return JsonResponse({"id": collection.id}, status=200)
 
 

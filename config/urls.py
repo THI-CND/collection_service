@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+import collection_service.src.grpc.collection_pb2_grpc as collection_pb2_grpc
+from collection_service.src.grpc.grpc_service import CollectionService
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,7 +25,4 @@ urlpatterns = [
 ]
 
 def grpc_handlers(server):
-    import collection_service.src.grpc.collection_pb2_grpc as collection_pb2_grpc
-    from collection_service.src.grpc.grpc_service import CollectionService
-
     collection_pb2_grpc.add_CollectionServiceServicer_to_server(CollectionService.as_servicer(), server)

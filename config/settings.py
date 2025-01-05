@@ -114,8 +114,13 @@ else:
 RABBITMQ_USER = env("RABBITMQ_USER", default="guest")
 RABBITMQ_PASSWORD = env("RABBITMQ_PASSWORD", default="guest")
 RABBITMQ_HOST = env("RABBITMQ_HOST", default="localhost")
-RABBITMQ_EXCHANGE = env("RABBITMQ_EXCHANGE", default="recipemanagement")
 RABBITMQ_PORT = env("RABBITMQ_PORT", default="5672")
+RABBITMQ_EXCHANGE = env("RABBITMQ_EXCHANGE", default="recipemanagement")
+RABBITMQ_ROUTING_KEYS = {
+    'collection_created': 'collection.created',
+    'collection_updated': 'collection.updated',
+    'collection_deleted': 'collection.deleted',
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
