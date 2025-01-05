@@ -1,4 +1,5 @@
 import pika, json
+from pika.exceptions import AMQPConnectionError
 from django.conf import settings
 from .rabbitmq_config import rabbitmq_connection
 import logging
@@ -33,7 +34,7 @@ def publish_event(event: str, payload: dict):
         )
         logger.info("Message successfully published: event=%s, message=%s", event, payload)
 
-    except pika.exceptions.AMQPConnectionError as e:
+    except AMQPConnectionError as e:
         logger.error("Failed to send message to RabbitMQ: %s", str(e))
         # Attempt reconnection and re-raise for the caller to handle
         rabbitmq_connection.connect()
