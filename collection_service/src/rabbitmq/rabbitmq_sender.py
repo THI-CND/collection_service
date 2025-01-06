@@ -6,14 +6,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def publish_event(event: str, payload: dict):
+def publish_event(event: str, payload: dict, retry_count=2):
     """
     Publish an event to the RabbitMQ exchange.
     """
-    channel = rabbitmq_connection.ensure_connection()
-
     try:
+        channel = rabbitmq_connection.ensure_connection()
         # Serialize the message to JSON and set properties
+
+        if channel is None:
+            logger.warning("No RabbitMQ channel available. Skipping message publish.")
+            return
+        
         properties = pika.BasicProperties(
             content_type='application/json',
             delivery_mode=2,  # Persistent messages
@@ -31,7 +35,10 @@ def publish_event(event: str, payload: dict):
 
     except AMQPConnectionError as e:
         logger.error("Failed to send message to RabbitMQ: %s", str(e))
-        # Attempt reconnection
-        rabbitmq_connection.connect()
-        #publish_event(event, payload)
+        if retry_count > 0:
+            logger.info("Retrying... Remaining attempts: %d", retry_count)
+            rabbitmq_connection.connect()
+            publish_event(event, payload, retry_count=retry_count - 1)
+        else:
+            logger.error("Max retry attempts reached. Giving up on publishing the message.")
 

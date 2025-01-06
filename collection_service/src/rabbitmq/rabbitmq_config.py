@@ -41,15 +41,8 @@ class RabbitMQConnection:
         
     def ensure_connection(self):
         """Ensure the connection and channel are open."""
-        if self._connection is None or self._connection.is_closed:
-            if self._connection is None:
-                logger.info("No RabbitMQ connection found. Establishing the first connection...")
-            else:
-                logger.warning("RabbitMQ connection is closed. Reconnecting...")
-            self.connect()
-
-        if self._channel is None:
-            logger.warning("RabbitMQ channel could not be established.")
+        if self._connection is None or self._connection.is_closed or self._channel is None:
+            logger.info("Establishing RabbitMQ connection and channel...")
             self.connect()
         return self._channel
     
