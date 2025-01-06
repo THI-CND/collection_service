@@ -15,9 +15,7 @@ class RabbitMQConnection:
             credentials=pika.PlainCredentials(
                 settings.RABBITMQ_USER,
                 settings.RABBITMQ_PASSWORD
-            ),
-            heartbeat=60,
-            blocked_connection_timeout=30,
+            )
         )
 
     def connect(self):
@@ -52,6 +50,7 @@ class RabbitMQConnection:
 
         if self._channel is None:
             logger.warning("RabbitMQ channel could not be established.")
+            self.connect()
         return self._channel
     
     def close(self):

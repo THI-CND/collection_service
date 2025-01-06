@@ -10,14 +10,9 @@ def publish_event(event: str, payload: dict):
     """
     Publish an event to the RabbitMQ exchange.
     """
-    try:
-        # Establish or reuse the RabbitMQ connection and channel
-        channel = rabbitmq_connection.ensure_connection()
+    channel = rabbitmq_connection.ensure_connection()
 
-        if channel is None:
-            logger.warning("No RabbitMQ channel available. Skipping message publish.")
-            return 
-        
+    try:
         # Serialize the message to JSON and set properties
         properties = pika.BasicProperties(
             content_type='application/json',
@@ -36,11 +31,7 @@ def publish_event(event: str, payload: dict):
 
     except AMQPConnectionError as e:
         logger.error("Failed to send message to RabbitMQ: %s", str(e))
-        # Attempt reconnection and re-raise for the caller to handle
+        # Attempt reconnection
         rabbitmq_connection.connect()
-        raise
-
-    except Exception as e:
-        logger.error("Unexpected error while publishing event: %s", str(e))
-        raise
+        #publish_event(event, payload)
 
