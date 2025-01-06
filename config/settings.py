@@ -34,6 +34,7 @@ SECRET_KEY = env("SECRET_KEY_DJANGO")
 DEBUG = env("DEBUG", default=False)
 
 ALLOWED_HOSTS = [
+    'collection-service',
     'localhost',
     '127.0.0.1',
 ]
