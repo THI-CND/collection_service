@@ -11,8 +11,6 @@ from .rest_service import create_collection, update_collection, delete_collectio
 class CollectionView(APIView):
     def get(self, request):
         collections = Collection.objects.all()
-        if not collections:
-            return Response(status=status.HTTP_204_NO_CONTENT)  # Keine Inhalte
         serializer = CollectionSerializer(collections, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

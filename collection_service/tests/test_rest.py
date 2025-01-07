@@ -189,4 +189,4 @@ class CollectionServiceTests(TestCase):
         """
         Collection.objects.all().delete()
         response = self.client.get(reverse('collection_view'))
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)

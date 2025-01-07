@@ -15,7 +15,7 @@ def create_collection(request):
     
     required_fields = ["author", "name", "description"]
     if not all(field in data for field in required_fields):
-        return JsonResponse({"error": "Missing required fields: : author, name, or description"}, status=400)
+        return JsonResponse({"error": "Missing required fields: : author, name, or description"}, status=status.HTTP_400_BAD_REQUEST)
 
     #author = get_object_or_404(User, username=data['author'])
     author = data['author']
@@ -65,7 +65,7 @@ def update_collection(request, id):
     
     required_fields = ["author", "name", "description"]
     if not all(field in data for field in required_fields):
-        return JsonResponse({"error": "Missing required fields: : author, name, or description"}, status=400)
+        return JsonResponse({"error": "Missing required fields: : author, name, or description"}, status=status.HTTP_400_BAD_REQUEST)
     
     collection = get_object_or_404(Collection, id=id)
     #author = get_object_or_404(User, username=data['author'])   
@@ -104,7 +104,7 @@ def collection_add_recipe(request, id):
     if recipe_id not in collection.recipes:
         collection.recipes.append(recipe_id)
         collection.save()
-        return JsonResponse({"status": "added"}, status=200)
+        return JsonResponse({"status": "added"}, status=status.HTTP_200_OK)
     else:
         return JsonResponse({"error": "Recipe already in collection"}, status=status.HTTP_409_CONFLICT)
 
