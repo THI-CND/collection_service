@@ -1,4 +1,5 @@
-
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -10,10 +11,8 @@ from .rest_service import create_collection, update_collection, delete_collectio
 class CollectionView(APIView):
     def get(self, request):
         collections = Collection.objects.all()
-        if not collections:
-            return Response(status=204)  # Keine Inhalte
         serializer = CollectionSerializer(collections, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         return create_collection(request)
@@ -39,3 +38,14 @@ class CollectionRecipeView(APIView):
 
     def delete(self, request, id):
         return collection_remove_recipe(request, id)
+    
+class CollectionTagView(APIView):
+    def get(self, request, id):
+        collection = get_object_or_404(Collection, id=id)
+        recipe_ids = collection.recipes
+        #client = RecipeGrpcClient()
+        #recipe_tags = client.get_recipe_tags(recipe_ids)
+        recipe_tags = ["Food"]
+        if not recipe_tags:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse(recipe_tags, safe=False, status=status.HTTP_200_OK)

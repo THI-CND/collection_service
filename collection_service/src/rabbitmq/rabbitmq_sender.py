@@ -1,44 +1,44 @@
 import pika, json
-from .rabbitmq_config import connect, ensure_connection
+from pika.exceptions import AMQPConnectionError
+from django.conf import settings
+from .rabbitmq_config import rabbitmq_connection
+import logging
 
-def publish_event(event, message):
-        channel = ensure_connection()  # Stelle sicher, dass die Verbindung und der Kanal offen sind
-        
-        properties = pika.BasicProperties(content_type='application/json', delivery_mode=2) # persistent messages
-        
-        try:
-                channel.basic_publish(exchange='collection_service_exchange', routing_key=event, 
-                                body=json.dumps(message), properties=properties)
-                print(f"Message successfully published: {event}")
-    
-        except pika.exceptions.AMQPConnectionError as e:
-                print(f"Error sending message to {event}: {e}")
-                # Versuche, die Verbindung und den Kanal erneut zu öffnen und Nachricht zu senden
-                connect()
-                publish_event(event, message) 
+logger = logging.getLogger(__name__)
 
+def publish_event(event: str, payload: dict, retry_count=2):
+    """
+    Publish an event to the RabbitMQ exchange.
+    """
+    try:
+        channel = rabbitmq_connection.ensure_connection()
+        # Serialize the message to JSON and set properties
 
-def create_message(username, name, event):
-    if event == 'collection.created':
-        message = {#"id": 3, 
-            "user": username, #hier irgendwann der eingeloggte User
-            "title": 'Collection created', 
-            "message": f'Hello {username}, your new collection "{name}" was created.'
-        }
-            
-    elif event == 'collection.updated':
-        message = {#"id": 3, 
-                "user": username, #hier irgendwann der eingeloggte User
-                "title": 'Collection updated', 
-                "message": f'Hello {username}, your collection "{name}" was updated.'
-        }
+        if channel is None:
+            logger.warning("No RabbitMQ channel available. Skipping message publish.")
+            return
         
-    elif event == 'collection.deleted':
-        message = {#"id": 3, 
-                "user": username, #hier irgendwann der eingeloggte User
-                "title": 'Collection deleted', 
-                "message": f'Hello {username}, your collection "{name}" was deleted.'
-        }
-    
-    publish_event(event, message)
+        properties = pika.BasicProperties(
+            content_type='application/json',
+            delivery_mode=2,  # Persistent messages
+        )
+        message_json = json.dumps(payload)
+
+        # Publish the message
+        channel.basic_publish(
+            exchange=settings.RABBITMQ_EXCHANGE,
+            routing_key=settings.RABBITMQ_ROUTING_KEYS[event],
+            body=message_json,
+            properties=properties,
+        )
+        logger.info("Message successfully published: event=%s, message=%s", event, payload)
+
+    except AMQPConnectionError as e:
+        logger.error("Failed to send message to RabbitMQ: %s", str(e))
+        if retry_count > 0:
+            logger.info("Retrying... Remaining attempts: %d", retry_count)
+            rabbitmq_connection.connect()
+            publish_event(event, payload, retry_count=retry_count - 1)
+        else:
+            logger.error("Max retry attempts reached. Giving up on publishing the message.")
 

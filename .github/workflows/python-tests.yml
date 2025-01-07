@@ -1,10 +1,10 @@
 #noch zu konfigurieren
 name: Python Tests
 
-#on:
-  #pull_request:
-    #branches:
-      #- 'next'
+on:
+  pull_request:
+    branches:
+      - 'xxxxx'
 
 jobs:
   test:

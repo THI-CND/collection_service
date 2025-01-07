@@ -1,16 +1,15 @@
 import grpc
 from django_grpc_framework.services import Service
 from ..models import Collection
-from ..serializers import CollectionProtoSerializer
+from ..serializers import CollectionProtoSerializer, CollectionSerializer
 from collection_service.src.grpc.collection_pb2 import ListCollectionResponse, DeleteCollectionResponse, ModifyRecipeResponse
-from collection_service.src.rabbitmq.rabbitmq_sender import create_message
+from collection_service.src.rabbitmq.rabbitmq_sender import publish_event
 
 
 class CollectionService(Service):
     def GetCollectionById(self, request, context):
         try:
             collection = Collection.objects.get(id=request.id)
-            print(CollectionProtoSerializer(collection).message)
             return CollectionProtoSerializer(collection).message
         except Collection.DoesNotExist:
             context.abort(grpc.StatusCode.NOT_FOUND, 'Collection not found')
@@ -30,7 +29,7 @@ class CollectionService(Service):
         if serializer.is_valid(raise_exception=True):
             collection = serializer.save()
             # Trigger event
-            create_message(collection.author, collection.name, 'collection.created')
+            publish_event('collection_created', CollectionSerializer(collection).data)
             return serializer.message
         
     def UpdateCollection(self, request, context):
@@ -47,8 +46,7 @@ class CollectionService(Service):
             if serializer.is_valid(raise_exception=True):
                 collection = serializer.save()
                 # Trigger event
-                print(collection.author, collection.name)
-                create_message(collection.author, collection.name, 'collection.updated')
+                publish_event('collection_updated', CollectionSerializer(collection).data)
                 return serializer.message
         except Collection.DoesNotExist:
             context.abort(grpc.StatusCode.NOT_FOUND, 'Collection not found')
@@ -58,9 +56,9 @@ class CollectionService(Service):
             collection = Collection.objects.get(id=request.id)
             if collection.author != request.author:
                 context.abort(grpc.StatusCode.PERMISSION_DENIED, 'Not authorized to delete this collection')
-            collection.delete()
             # Trigger event
-            create_message(collection.author, collection.name, 'collection.deleted')
+            publish_event('collection_deleted', CollectionSerializer(collection).data)
+            collection.delete()
             return DeleteCollectionResponse(status="Collection deleted")
         except Collection.DoesNotExist:
             context.abort(grpc.StatusCode.NOT_FOUND, 'Collection not found')

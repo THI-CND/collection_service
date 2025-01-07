@@ -1,52 +1,56 @@
 import pika
+from pika.exceptions import AMQPConnectionError
 from django.conf import settings
+import logging
 
-credentials = pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD)
-params = pika.ConnectionParameters(host=settings.RABBITMQ_HOST, credentials=credentials)
+logger = logging.getLogger(__name__)
 
-#params = pika.URLParameters('amqp://guest:guest@localhost:5672/')
-#connection = pika.BlockingConnection(params)
+class RabbitMQConnection:
+    def __init__(self):
+        self._connection = None
+        self._channel = None
+        self._params = pika.ConnectionParameters(
+            host=settings.RABBITMQ_HOST,
+            port=settings.RABBITMQ_PORT,
+            credentials=pika.PlainCredentials(
+                settings.RABBITMQ_USER,
+                settings.RABBITMQ_PASSWORD
+            )
+        )
 
-# Globales connection und channel Objekt
-connection = None
-channel = None
+    def connect(self):
+        """Establish the RabbitMQ connection and channel."""
+        try:
+            self._connection = pika.BlockingConnection(self._params)
+            self._channel = self._connection.channel()
+            self._channel.exchange_declare(
+                exchange=settings.RABBITMQ_EXCHANGE,
+                exchange_type='topic',
+                durable=True,
+            )
 
-# Funktion, um eine Verbindung und einen Kanal zu erstellen
-def connect():
-    global connection, channel
-    try:
-        connection = pika.BlockingConnection(params)
-        channel = connection.channel()
+            logger.info("RabbitMQ connection and channel successfully established.")
+        except AMQPConnectionError as e:
+            logger.error("Failed to connect to RabbitMQ: %s. Continuing without RabbitMQ.", str(e))
+            self._connection = None
+            self._channel = None
+        except Exception as e:
+            logger.error("Unexpected error while connecting to RabbitMQ: %s", str(e))
+            self._connection = None
+            self._channel = None
         
-        # Nur zum Debuggen
-        channel.queue_declare(queue='collection.created', durable=True)
-        channel.queue_declare(queue='collection.updated', durable=True)
-        channel.queue_declare(queue='collection.deleted', durable=True)
-        
-        exchange = 'collection_service_exchange'
-        channel.exchange_declare(exchange=exchange, exchange_type='topic', durable=True)
-        
-        # Nur zum Debuggen
-        channel.queue_bind(exchange=exchange, queue='collection.created', routing_key='collection.created.#')
-        channel.queue_bind(exchange=exchange, queue='collection.updated', routing_key='collection.updated.#')
-        channel.queue_bind(exchange=exchange, queue='collection.deleted', routing_key='collection.deleted.#')
-        
-        print("RabbitMQ connection and channel successfully created.")
+    def ensure_connection(self):
+        """Ensure the connection and channel are open."""
+        if self._connection is None or self._connection.is_closed or self._channel is None:
+            logger.info("Establishing RabbitMQ connection and channel...")
+            self.connect()
+        return self._channel
     
-    except pika.exceptions.AMQPConnectionError as e:
-        print("Error while trying to connect to RabbitMQ:", e)
-        raise
+    def close(self):
+        """Close the RabbitMQ connection."""
+        if self._connection and self._connection.is_open:
+            self._connection.close()
+            logger.info("RabbitMQ connection closed.")
 
-# Funktion zur Überprüfung der Verbindung und des Kanals
-def ensure_connection():
-    global connection, channel
-    if connection is None or connection.is_closed:
-        print("RabbitMQ connection is closed or not available. Reestablish connection...")
-        connect()
-    elif not channel.is_open:
-        print("RabbitMQ channel is closed. Open new channel...")
-        channel = connection.channel()
-        
-    return channel
+rabbitmq_connection = RabbitMQConnection()
 
-#connect()
