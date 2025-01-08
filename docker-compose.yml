@@ -10,11 +10,11 @@ services:
     volumes:
       - rabbitmq_data:/data
     healthcheck:
-        test: rabbitmq-diagnostics -q ping
-        interval: 15s
-        timeout: 30s
-        retries: 5
-  
+      test: rabbitmq-diagnostics -q ping
+      interval: 15s
+      timeout: 30s
+      retries: 5
+
   collection-service:
     build: .
     image: collection-service
@@ -22,10 +22,9 @@ services:
     volumes:
       - .:/code
     ports:
-      - "8000:8000"  # Django REST-Server Port
-      - "50051:50051"  # gRPC-Server Port
-    environment:
-      DB_NAME=recipe
+      - "8000:8000" # Django REST-Server Port
+      - "50051:50051" # gRPC-Server Port
+    environment: DB_NAME=recipe
       DB_USER=postgres
       DB_PASSWORD=qweasdyxc
       DB_HOST=postgres
@@ -33,16 +32,15 @@ services:
       RABBITMQ_USER=guest
       RABBITMQ_PASSWORD=guest
       RABBITMQ_HOST=rabbitmq
-      SECRET_KEY_DJANGO=django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
     restart: unless-stopped
     depends_on:
       postgres_db:
         condition: service_started
       rabbitmq:
         condition: service_healthy
-    links: 
+    links:
       - rabbitmq
-      
+
   postgres_db:
     image: postgres:17.0
     ports:

@@ -120,10 +120,14 @@ RABBITMQ_PASSWORD = env("RABBITMQ_PASSWORD", default="guest")
 RABBITMQ_HOST = env("RABBITMQ_HOST", default="localhost")
 RABBITMQ_PORT = env("RABBITMQ_PORT", default="5672")
 RABBITMQ_EXCHANGE = env("RABBITMQ_EXCHANGE", default="recipemanagement")
+
+routing_keys = env("RABBITMQ_ROUTING_KEYS_COLLECTION", default="collection.created,collection.updated,collection.deleted")
+routing_keys_list = routing_keys.split(',')
+
 RABBITMQ_ROUTING_KEYS = {
-    'collection_created': 'collection.created',
-    'collection_updated': 'collection.updated',
-    'collection_deleted': 'collection.deleted',
+    'collection_created': routing_keys_list[0],
+    'collection_updated': routing_keys_list[1],
+    'collection_deleted': routing_keys_list[2],
 }
 
 # Password validation
