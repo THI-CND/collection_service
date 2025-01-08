@@ -39,6 +39,9 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
+# Server Ports
+GRPC_SERVER_PORT = '50051'
+DJANGO_SERVER_PORT = '8000'
 
 # Application definition
 

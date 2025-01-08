@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from sys import stdout, stderr
 from subprocess import Popen, TimeoutExpired
 import time
@@ -6,9 +7,12 @@ import time
 class Command(BaseCommand):
     help = "Starts both the Django REST server and the gRPC server."
 
+    grpc_port = settings.GRPC_SERVER_PORT
+    django_port = settings.DJANGO_SERVER_PORT
+
     commands = [
-        ['python', 'manage.py', 'grpcrunserver', '0.0.0.0:50051'],
-        ['python', 'manage.py', 'runserver', '0.0.0.0:8000']
+        ['python', 'manage.py', 'grpcrunserver', f'0.0.0.0:{grpc_port}'],
+        ['python', 'manage.py', 'runserver', f'0.0.0.0:{django_port}']
     ]
 
     def handle(self, *args, **options):
