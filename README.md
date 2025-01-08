@@ -1,5 +1,7 @@
 # Collection Service
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=THI-CND_collection_service&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=THI-CND_collection_service)
+
 ## Übersicht
 
 Der Collection Service verwaltet Sammlungen von Rezepten für Benutzer.
