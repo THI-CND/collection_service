@@ -4,7 +4,9 @@ from ..models import Collection
 from ..serializers import CollectionProtoSerializer, CollectionSerializer
 from collection_service.src.grpc.collection_pb2 import ListCollectionResponse, DeleteCollectionResponse, ModifyRecipeResponse
 from collection_service.src.rabbitmq.rabbitmq_sender import publish_event
+import logging
 
+logger = logging.getLogger(__name__)
 
 class CollectionService(Service):
     def GetCollectionById(self, request, context):
@@ -29,7 +31,11 @@ class CollectionService(Service):
         if serializer.is_valid(raise_exception=True):
             collection = serializer.save()
             # Trigger event
-            publish_event('collection_created', CollectionSerializer(collection).data)
+            try:
+                publish_event('collection_created', CollectionSerializer(collection).data)
+            except Exception as e:
+                logger.error(f"Failed to publish RabbitMQ event: {e}")
+
             return serializer.message
         
     def UpdateCollection(self, request, context):
@@ -46,7 +52,11 @@ class CollectionService(Service):
             if serializer.is_valid(raise_exception=True):
                 collection = serializer.save()
                 # Trigger event
-                publish_event('collection_updated', CollectionSerializer(collection).data)
+                try:
+                    publish_event('collection_updated', CollectionSerializer(collection).data)
+                except Exception as e:
+                    logger.error(f"Failed to publish RabbitMQ event: {e}")
+
                 return serializer.message
         except Collection.DoesNotExist:
             context.abort(grpc.StatusCode.NOT_FOUND, 'Collection not found')
@@ -57,7 +67,11 @@ class CollectionService(Service):
             if collection.author != request.author:
                 context.abort(grpc.StatusCode.PERMISSION_DENIED, 'Not authorized to delete this collection')
             # Trigger event
-            publish_event('collection_deleted', CollectionSerializer(collection).data)
+            try:
+                publish_event('collection_deleted', CollectionSerializer(collection).data)
+            except Exception as e:
+                logger.error(f"Failed to publish RabbitMQ event: {e}")
+                
             collection.delete()
             return DeleteCollectionResponse(status="Collection deleted")
         except Collection.DoesNotExist:

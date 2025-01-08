@@ -5,7 +5,9 @@ from ..rabbitmq.rabbitmq_sender import publish_event
 from ..models import Collection
 from ..serializers import CollectionSerializer
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 
 def create_collection(request):
     try:
@@ -33,8 +35,12 @@ def create_collection(request):
     
     collection.save()
     # Trigger event
-    collection_data = CollectionSerializer(collection).data
-    publish_event('collection_created', collection_data)
+    try:
+        collection_data = CollectionSerializer(collection).data
+        publish_event('collection_created', collection_data)
+    except Exception as e:
+        logger.error(f"Failed to publish RabbitMQ event: {e}")
+
     return JsonResponse({"id": collection.id}, status=status.HTTP_201_CREATED)
 
 
@@ -51,8 +57,12 @@ def delete_collection(request, id):
         return JsonResponse({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
     
     # Trigger event
-    collection_data = CollectionSerializer(collection).data
-    publish_event('collection_deleted', collection_data)
+    try:
+        collection_data = CollectionSerializer(collection).data
+        publish_event('collection_deleted', collection_data)
+    except Exception as e:
+        logger.error(f"Failed to publish RabbitMQ event: {e}")
+
     collection.delete()
     return JsonResponse({"status": "deleted"}, status=status.HTTP_200_OK)
 
@@ -84,8 +94,12 @@ def update_collection(request, id):
     
     collection.save()
     # Trigger event
-    collection_data = CollectionSerializer(collection).data
-    publish_event('collection_updated', collection_data)
+    try:
+        collection_data = CollectionSerializer(collection).data
+        publish_event('collection_updated', collection_data)
+    except Exception as e:
+        logger.error(f"Failed to publish RabbitMQ event: {e}")
+        
     return JsonResponse({"id": collection.id}, status=status.HTTP_200_OK)
 
 

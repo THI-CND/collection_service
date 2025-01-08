@@ -1,9 +1,7 @@
-FROM python:3.11-slim
+FROM python:3.11-slim AS build
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONBUFFERED=1
-ENV PASSWORD=admin
-ENV USERNAME=admin
 
 WORKDIR /code
 
@@ -11,25 +9,20 @@ RUN pip install --upgrade pip
 COPY  requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-#installationstools wie bspw pip soll beim Multistagebuild dann nicht im endcontainer vorhanden sein
 
-#2 images werden gebaut bzw ist das erste für die installation der requirements und das zweite für die ausführung und nur das zweite wird dann auch als Image angezeigt
+FROM python:3.11-slim
 
-#FROM python:3.11-slim
-
-COPY . .
-
-# noch implementieren, falls der cmd fehlschlägt
-#CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
-
-#&& python manage.py test
-
-#Test Database
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONBUFFERED=1
 ENV USE_TEST_DB=True
 ENV SECRET_KEY_DJANGO=django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
 
+WORKDIR /code
 
-#RUN python manage.py test
+COPY --from=build /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=build /usr/local/bin /usr/local/bin
+
+COPY . .
 
 CMD sh -c "\
   echo 'Running tests...' && \
@@ -40,5 +33,4 @@ CMD sh -c "\
   python manage.py shell -c \"exec(open('load_default_data.py').read())\" && \
   echo 'Starting the Django server and the grpc server...' && \
   python manage.py startcollectionservice\
-  #python manage.py runserver 0.0.0.0:8000 & python manage.py grpcrunserver\
 "
