@@ -1,6 +1,4 @@
 from django.contrib import admin
-from .src.models import Collection
-
-# Register your models here.
+from .models import Collection
 
 admin.site.register(Collection)
