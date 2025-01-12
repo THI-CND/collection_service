@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from subprocess import Popen, TimeoutExpired
 from sys import stdout, stderr
 from django.conf import settings
+from django.core.management import call_command
 import signal
 import time
 class Command(BaseCommand):
@@ -30,6 +31,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         
+        # Migrationen ausführen
+        self.stdout.write("Running migrations...")
+        call_command('migrate')
+
         # Prozesse starten
         rest_process = Popen(self.rest_command, stdout=stdout, stderr=stderr)
         grpc_process = Popen(self.grpc_command, stdout=stdout, stderr=stderr)

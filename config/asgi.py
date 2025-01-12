@@ -1,6 +1,4 @@
-# Zweck: Konfiguration für ASGI (Asynchronous Server Gateway Interface) für Django-App
-# für Produktionsumgebungen; Stellt Schnittstelle von fortgeschrittenen/modernen Web-Servern zu Django-App her (asynchroner Code)
-
+# Description: ASGI config for production.
 import os
 
 from django.core.asgi import get_asgi_application

@@ -2,7 +2,7 @@
   {
     "model": "collection_service.collection",
     "fields": {
-      "name": "Meine Collection 1",
+      "name": "Meine Kollektion 1",
       "author": "Gustav",
       "description": "Dies ist Gustavs Rezept-Kollektion",
       "recipes": ["1"]
@@ -11,7 +11,7 @@
   {
     "model": "collection_service.collection",
     "fields": {
-      "name": "Meine Collection 2",
+      "name": "Meine Kollektion 2",
       "author": "Bernd",
       "description": "Dies ist Bernds Rezept-Kollektion",
       "recipes": ["2"]
@@ -20,7 +20,7 @@
   {
     "model": "collection_service.collection",
     "fields": {
-      "name": "Meine Collection 3",
+      "name": "Meine Kollektion 3",
       "author": "Anna",
       "description": "Dies ist Annas Rezept-Kollektion",
       "recipes": ["1", "2"]

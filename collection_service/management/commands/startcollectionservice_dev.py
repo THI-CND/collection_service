@@ -1,4 +1,6 @@
 from django.core.management.base import BaseCommand
+from django.core.management import call_command
+from django.db import connection
 from subprocess import Popen, TimeoutExpired
 from sys import stdout, stderr
 from django.conf import settings
@@ -10,15 +12,19 @@ class Command(BaseCommand):
     grpc_port = settings.GRPC_SERVER_PORT
     rest_port = settings.REST_SERVER_PORT
 
-        # Befehle für Uvicorn (REST) und gRPC
-    
+    # Befehle für Uvicorn (REST) und gRPC
     rest_command = ['python', 'manage.py', 'runserver', f'0.0.0.0:{rest_port}']
     grpc_command = ["python", "manage.py", "grpcrunserver", f"0.0.0.0:{grpc_port}"]
     
-
-
     def handle(self, *args, **options):
-        
+        # Migrationen ausführen
+        self.stdout.write("Running migrations...")
+        call_command('migrate')
+
+        # Standarddaten laden
+        self.stdout.write("Checking if default data needs to be loaded...")
+        self.load_default_data()
+
         # Prozesse starten
         rest_process = Popen(self.rest_command, stdout=stdout, stderr=stderr)
         grpc_process = Popen(self.grpc_command, stdout=stdout, stderr=stderr)
@@ -45,3 +51,12 @@ class Command(BaseCommand):
 
             self.stdout.write("Both servers have been stopped.")
             self.stdout.flush()
+
+    def load_default_data(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT COUNT(*) FROM collection_service_collection')
+        if cursor.fetchone()[0] == 0:
+            print("No collections found in database. Loading default data...")
+            call_command('loaddata', 'default_database.json')
+        else:
+            print("Collections found in database. Skipping loading default data.")
