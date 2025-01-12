@@ -10,8 +10,8 @@ import json
 class CollectionServiceTests(TestCase):
     def setUp(self):
         self.user = 'testuser'
-        self.recipe1 = 1
-        self.recipe2 = 2
+        self.recipe1 = "1"
+        self.recipe2 = "2"
         self.collection = Collection.objects.create(
             name='Test Collection',
             author=self.user,
@@ -39,8 +39,6 @@ class CollectionServiceTests(TestCase):
         collection = response.json()
         self.assertEqual(collection['name'], "Test Collection")
 
-    #@patch('collection_service.src.rabbitmq.rabbitmq_config.RabbitMQConnection', MagicMock())
-    #@patch('collection_service.src.rabbitmq.rabbitmq_sender.publish_event')
     def test_create_collection(self):
         """
         Testet das Erstellen einer neuen Sammlung.
@@ -61,16 +59,7 @@ class CollectionServiceTests(TestCase):
         created_collection = Collection.objects.get(name='New Collection')
         self.assertEqual(created_collection.author, self.user)
         self.assertEqual(len(created_collection.recipes), 2)
-        # mock_publish_event.assert_called_once_with('collection_created', {
-        #     "id": created_collection.id,
-        #     "name": created_collection.name,
-        #     "author": created_collection.author,
-        #     "description": created_collection.description,
-        #     "recipes": created_collection.recipes,
-        # })
 
-    #@patch('collection_service.src.rabbitmq.rabbitmq_config.RabbitMQConnection', MagicMock())
-    #@patch('collection_service.src.rabbitmq.rabbitmq_sender.publish_event')
     def test_update_collection(self):
         """
         Testet das Aktualisieren einer Sammlung.
@@ -91,14 +80,7 @@ class CollectionServiceTests(TestCase):
         self.assertEqual(self.collection.name, 'Updated Collection')
         self.assertEqual(self.collection.description, 'Updated Description')
         self.assertEqual(len(self.collection.recipes), 1)
-        # mock_publish_event.assert_called_once_with('collection_updated', {
-        #     "id": self.collection.id,
-        #     "name": self.collection.name,
-        #     "author": self.collection.author,
-        #     "description": self.collection.description,
-        #     "recipes": self.collection.recipes,
-        # })
-
+        
     def test_update_collection_by_other_user(self):
         """
         Testet das Aktualisieren einer Sammlung durch einen anderen Benutzer.
@@ -119,8 +101,6 @@ class CollectionServiceTests(TestCase):
         self.collection.refresh_from_db()
         self.assertNotEqual(self.collection.name, 'Updated Collection')
 
-    #@patch('collection_service.src.rabbitmq.rabbitmq_config.RabbitMQConnection', MagicMock())
-    #@patch('collection_service.src.rabbitmq.rabbitmq_sender.publish_event')
     def test_delete_collection(self):
         """
         Testet das Löschen einer Sammlung.
@@ -133,12 +113,7 @@ class CollectionServiceTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Collection.objects.count(), 0)
-        # mock_publish_event.assert_called_once_with('collection.deleted', {
-        #     "user": self.user,
-        #     "title": "Collection deleted",
-        #     "message": f'Hello {self.user}, your collection "Test Collection" was deleted.'
-        # })
-
+       
     def test_delete_collection_by_other_user(self):
         """
         Testet das Löschen einer Sammlung durch einen anderen Benutzer.

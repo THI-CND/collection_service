@@ -1,6 +1,12 @@
 .env
 Dockerfile
+docker-compose.yml
 .gitignore
 .git
 db.sqlite3
 .DS_Store
+__pycache__
+*.pyc
+*.pyo
+sonar-project.properties
+README.md

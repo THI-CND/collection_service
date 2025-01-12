@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package de.benedikt_schwering.thicnd.stubs;
+
+option java_multiple_files = true;
+option java_package = "de.benedikt_schwering.thicnd.stubs";
+
+service RecipeService {
+  rpc GetRecipes (Null) returns (RecipesResponse);
+  rpc GetRecipe (RecipeIdRequest) returns (RecipeResponse);
+  rpc GetTotalIngredients (RecipeIdRequest) returns (TotalIngredientsResponse);
+  rpc GetAssociatedTags (RecipeIdRequest) returns (AssociatedTagsResponse);
+  rpc CreateRecipe (CreateRecipeRequest) returns (RecipeResponse);
+  rpc UpdateRecipe (UpdateRecipeRequest) returns (RecipeResponse);
+  rpc DeleteRecipe (RecipeIdRequest) returns (Null);
+}
+
+message Null {}
+
+message CreateRecipeRequest {
+  RecipeRequest recipe = 1;
+}
+
+message UpdateRecipeRequest {
+  string id = 1;
+  RecipeRequest recipe = 2;
+}
+
+message RecipeIdRequest {
+  string id = 1;
+}
+
+message RecipeRequest {
+  string name = 1;
+  string author = 2;
+  string description = 3;
+  repeated StepRequest steps = 4;
+}
+
+message StepRequest {
+  repeated QuantifiedIngredientRequest quantifiedIngredients = 1;
+  string description = 2;
+}
+
+message QuantifiedIngredientRequest {
+  int64 ingredient = 1;
+  double quantity = 2;
+}
+
+message RecipesResponse {
+  repeated RecipeResponse recipes = 1;
+}
+
+message RecipeResponse {
+  string id = 1;
+  string name = 2;
+  string author = 3;
+  string description = 4;
+  repeated StepResponse steps = 5;
+}
+
+message StepResponse {
+  string id = 1;
+  repeated QuantifiedIngredientResponse quantifiedIngredients = 2;
+  string description = 3;
+}
+
+message QuantifiedIngredientResponse {
+  string id = 1;
+  int64 ingredient = 2;
+  double quantity = 3;
+}
+
+message TotalIngredientsResponse {
+  repeated TotalIngredientResponse totalIngredients = 1;
+}
+
+message TotalIngredientResponse {
+  int64 ingredient = 1;
+  double quantity = 2;
+}
+
+message AssociatedTagsResponse {
+  repeated string intersection = 1;
+  repeated string union = 2;
+}

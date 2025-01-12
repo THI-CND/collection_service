@@ -50,11 +50,11 @@ class Command(BaseCommand):
             else:
                 autoreload.main(self.inner_run, None, options)
         else:
-            self.stdout.write((
-                "Starting gRPC server at %(address)s\n"
-            ) % {
-                "address": self.address,
-            })
+            # self.stdout.write((
+            #     "Starting gRPC server at %(address)s\n"
+            # ) % {
+            #     "address": self.address,
+            # })
             self._serve()
 
     def _serve(self):

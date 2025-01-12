@@ -1,154 +1,179 @@
 # Collection Service
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=THI-CND_collection_service&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=THI-CND_collection_service)
+
 ## Übersicht
 
 Der Collection Service verwaltet Sammlungen von Rezepten für Benutzer.
-____
+
+---
+
 ## Schnittstellen
 
 ### REST API
 
-#### GET /collections
+#### GET /api/v1/collections
 
 Ruft alle Sammlungen ab.
 
 **Request:**
+
 - Methode: GET
-- URL: `/collections`
+- URL: `/api/v1/collections`
 
 **Response:**
+
 - Status: 200 OK
 - Body: Eine Liste von Sammlungen.
 
 **Beispiel:**
-GET "http://localhost:8000/collections"
+GET "http://localhost:8000/api/v1/collections"
 
 #### GET /collections/{id}
 
 Ruft eine bestimmte Sammlung ab.
 
 **Request:**
+
 - Methode: GET
-- URL: `/collections/{id}`
+- URL: `/api/v1/collections/{id}`
 
 **Response:**
+
 - Status: 200 OK
 - Body: Die angeforderte Sammlung.
 
 **Beispiel:**
-GET "http://localhost:8000/collections/1"
+GET "http://localhost:8000/api/v1/collections/1"
 
 #### POST /collections
 
 Erstellt eine neue Sammlung.
 
 **Request:**
+
 - Methode: POST
-- URL: `/collections`
+- URL: `/api/v1/collections`
 - Body: JSON-Objekt mit den Daten der neuen Sammlung.
 
 **Response:**
+
 - Status: 201 OK
 - Body: Die erstellte Sammlung.
 
 **Beispiel:**
-POST "http://localhost:8000/collections"
+POST "http://localhost:8000/api/v1/collections"
+
 ```json
 {
-    "name": "Neue Sammlung",
-    "author": "testuser",
-    "description": "Beschreibung der Sammlung",
-    "recipes": [1, 2]
+  "name": "Neue Sammlung",
+  "author": "testuser",
+  "description": "Beschreibung der Sammlung",
+  "recipes": [1, 2]
 }
 ```
 
-#### PUT /collections/{id}
+#### PUT /api/v1/collections/{id}
 
 Aktualisiert eine bestehende Sammlung.
 
 **Request:**
+
 - Methode: PUT
-- URL: `/collections/{id}`
+- URL: `/api/v1/collections/{id}`
 - Body: JSON-Objekt mit den aktualisierten Daten der Sammlung.
 
 **Response:**
+
 - Status: 200 OK
 - Body: Die aktualisierte Sammlung.
 
 **Beispiel:**
-PUT "http://localhost:8000/collections/1"
+PUT "http://localhost:8000/api/v1/collections/1"
+
 ```json
 {
-    "name": "Aktualisierte Sammlung",
-    "author": "testuser",
-    "description": "Aktualisierte Beschreibung",
-    "recipes": [1, 2]
+  "name": "Aktualisierte Sammlung",
+  "author": "testuser",
+  "description": "Aktualisierte Beschreibung",
+  "recipes": [1, 2]
 }
 ```
 
-#### DELETE /collections/{id}
+#### DELETE /api/v1/collections/{id}
 
 Löscht eine bestehende Sammlung.
 
 **Request:**
+
 - Methode: DELETE
-- URL: `/collections/{id}`
+- URL: `/api/v1/collections/{id}`
 - Body: JSON-Objekt mit den Daten des Autors.
 
 **Response:**
+
 - Status: 200 OK
 - Body: Bestätigung der Löschung.
 
 **Beispiel:**
-DELETE "http://localhost:8000/collections/1"
+DELETE "http://localhost:8000/api/v1/collections/1"
+
 ```json
 {
-    "author": "testuser"
+  "author": "testuser"
 }
 ```
 
-#### POST /collections/{id}/recipe
+#### POST /api/v2/collections/{id}/recipe
 
 Fügt ein Rezept zu einer Sammlung hinzu.
 
 **Request:**
+
 - Methode: POST
-- URL: `/collections/{id}/recipe`
+- URL: `/api/v2/collections/{id}/recipe`
 - Body: JSON-Objekt mit der ID des Rezepts.
 
 **Response:**
+
 - Status: 200 OK
 - Body: Die aktualisierte Sammlung.
 
 **Beispiel:**
-POST "http://localhost:8000/collections/1/recipe"
+POST "http://localhost:8000/api/v2/collections/1/recipe"
+
 ```json
 {
-    "recipe_id": 1
+  "recipe_id": 1
 }
 ```
 
-#### DELETE /collections/{id}/recipe
+#### DELETE /api/v2/collections/{id}/recipe
 
 Entfernt ein Rezept aus einer Sammlung.
 
 **Request:**
+
 - Methode: DELETE
-- URL: `/collections/{id}/recipe`
+- URL: `/api/v2/collections/{id}/recipe`
 - Body: JSON-Objekt mit der ID des Rezepts.
 
 **Response:**
+
 - Status: 200 OK
 - Body: Die aktualisierte Sammlung.
 
 **Beispiel:**
-DELETE "http://localhost:8000/collections/1/recipe"
+DELETE "http://localhost:8000/api/v2/collections/1/recipe"
+
 ```json
 {
-    "recipe_id": 1
+  "recipe_id": 1
 }
 ```
-____
+
+---
+
 ### gRPC API
 
 ```java
@@ -225,13 +250,16 @@ Der Collection Service sendet Nachrichten über erstellte, aktualisierte und gel
 #### Exchange: `collection_service_exchange`
 
 **Methoden:**
+
 - `publishEvent(method, body)`: Sendet eine Nachricht an den angegebenen Routing-Key.
 
 **Parameter:**
+
 - `method` (str): Der Routing-Key der Nachricht (`collection.created`, `collection.updated`, `collection.deleted`).
 - `body` (dict): Der Inhalt der Nachricht.
 
 **Beispiel:**
+
 ```python
 publishEvent('collection.created', {
     "id": 1,
@@ -243,7 +271,7 @@ publishEvent('collection.created', {
 
 ### Datenbank
 
-Der Collection Service verwendet eine relationale Datenbank zur Speicherung der Sammlungen und Rezepte.
+Der Collection Service verwendet eine Datenbank zur Speicherung der Sammlungen und Rezepte.
 
 #### Tabellen
 
@@ -252,6 +280,7 @@ Der Collection Service verwendet eine relationale Datenbank zur Speicherung der 
 Speichert Informationen über die Sammlungen.
 
 **Spalten:**
+
 - `id` (int, Primary Key): Eindeutige ID der Sammlung.
 - `name` (str): Name der Sammlung.
 - `author` (str): Autor der Sammlung.

@@ -5,44 +5,44 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      - RABBITMQ_USER=guest
-      - RABBITMQ_PASSWORD=guest
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
     volumes:
       - rabbitmq_data:/data
     healthcheck:
-        test: rabbitmq-diagnostics -q ping
-        interval: 15s
-        timeout: 30s
-        retries: 5
-  
+      test: rabbitmq-diagnostics -q ping
+      interval: 15s
+      timeout: 30s
+      retries: 5
+
   collection-service:
-    build: .
-    image: collection-service
-    #command: python manage.py runserver 0.0.0.0:8000
+    image: ghcr.io/thi-cnd/collection_service:latest
     volumes:
-      - .:/code
+      - ./collection_service:/code
     ports:
-      - "8000:8000"  # Django REST-Server Port
-      - "50051:50051"  # gRPC-Server Port
+      - "8000:8000" # Django REST-Server Port
+      - "50051:50051" # gRPC-Server Port
     environment:
-      DB_NAME=recipe
-      DB_USER=postgres
-      DB_PASSWORD=qweasdyxc
-      DB_HOST=postgres
-      DB_PORT=5432
-      RABBITMQ_USER=guest
-      RABBITMQ_PASSWORD=guest
-      RABBITMQ_HOST=rabbitmq
-      SECRET_KEY_DJANGO=django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
+      SECRET_KEY_DJANGO: django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
+      DB_NAME: collection
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: postgres
+      DB_PORT: 5432
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_EXCHANGE: recipemanagement
+      RABBITMQ_ROUTING_KEYS_COLLECTION: collection.created,collection.updated,collection.deleted
+      USE_TEST_DB: False #Test Database
     restart: unless-stopped
     depends_on:
-      postgres_db:
+      postgres:
         condition: service_started
       rabbitmq:
         condition: service_healthy
-    links: 
-      - rabbitmq
-      
+
   postgres_db:
     image: postgres:17.0
     ports:
@@ -50,9 +50,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=recipe
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=qweasdyxc
+      POSTGRES_DB: collection
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
 
 volumes:
   postgres_data:
