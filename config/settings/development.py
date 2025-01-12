@@ -30,3 +30,7 @@ RABBITMQ_ROUTING_KEYS = {
     'collection_updated': routing_keys_list[1],
     'collection_deleted': routing_keys_list[2],
 }
+
+# GRPC-Konfiguration Recipe-Service
+GRPC_HOST_RECIPE_SERVICE = env("GRPC_HOST_RECIPE_SERVICE", default="localhost")
+GRPC_PORT_RECIPE_SERVICE = env("GRPC_PORT_RECIPE_SERVICE", default=9098)
