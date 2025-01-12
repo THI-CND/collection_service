@@ -31,5 +31,6 @@ jobs:
       - name: Run Django Tests
         env:
           DJANGO_SETTINGS_MODULE: config.settings.test
+          SECRET_KEY_DJANGO: django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
         run: |
           python manage.py test
