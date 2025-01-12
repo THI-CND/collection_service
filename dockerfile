@@ -27,8 +27,6 @@ COPY . .
 RUN echo 'Running tests...' && python manage.py test
 
 CMD sh -c "\
-  #echo 'Running tests...' && \
-  #python manage.py test && \
   echo 'Running migrations...' && \
   python manage.py migrate && \
   echo 'Checking if default data needs to be loaded...' && \

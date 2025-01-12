@@ -2,9 +2,6 @@ import pika, json
 from pika.exceptions import AMQPConnectionError
 from django.conf import settings
 from .rabbitmq_config import rabbitmq_connection
-import logging
-
-logger = logging.getLogger(__name__)
 
 def publish_event(event: str, payload: dict, connection=None):
     if connection is None:

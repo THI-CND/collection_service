@@ -1,6 +1,6 @@
 from pathlib import Path
 import environ
-import os
+#import os
 
 env = environ.Env()
 
@@ -8,13 +8,13 @@ env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 #Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+#environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env("SECRET_KEY_DJANGO")
 
 # Server Ports
 GRPC_SERVER_PORT = '50051'
-DJANGO_SERVER_PORT = '8000'
+REST_SERVER_PORT = '8000'
 
 # Application definition
 INSTALLED_APPS = [
@@ -40,6 +40,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+GRPC_FRAMEWORK = {
+    'ROOT_HANDLERS_HOOK': 'config.grpc_handlers.grpc_handlers',
+}
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
