@@ -3,8 +3,13 @@ name: Python Tests
 
 on:
   pull_request:
-    branches:
-      - 'next'
+      branches:
+        - 'next'
+
+  push:
+      branches:
+        - main
+        - next
 
 jobs:
   test:
