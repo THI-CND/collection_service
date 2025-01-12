@@ -1,38 +1,29 @@
 [
-    {
-        "model": "collection_service.collection",
-        "fields": {
-            "name": "Meine Collection 1",
-            "author": 1,
-            "description": "Dies ist Gustavs Rezept-Kollektion",
-            "recipes": [
-                1
-            ]
-        }
-    },
-    {
-        "model": "collection_service.collection",
-        "fields": {
-            "name": "Meine Collection 2",
-            "author": 3,
-            "description": "Dies ist Gustavs Rezept-Kollektion",
-            "recipes": [
-                1,
-                2
-            ]
-        }
-    },
-    {
-        "model": "collection_service.collection",
-        "fields": {
-            "name": "Meine Collection 3",
-            "author": 2,
-            "description": "Dies ist Annas Rezept-Kollektion",
-            "recipes": [
-                1,
-                2
-            ]
-        }
-}
-
+  {
+    "model": "collection_service.collection",
+    "fields": {
+      "name": "Meine Collection 1",
+      "author": "Gustav",
+      "description": "Dies ist Gustavs Rezept-Kollektion",
+      "recipes": [1]
+    }
+  },
+  {
+    "model": "collection_service.collection",
+    "fields": {
+      "name": "Meine Collection 2",
+      "author": "Bernd",
+      "description": "Dies ist Bernds Rezept-Kollektion",
+      "recipes": [1, 2]
+    }
+  },
+  {
+    "model": "collection_service.collection",
+    "fields": {
+      "name": "Meine Collection 3",
+      "author": "Anna",
+      "description": "Dies ist Annas Rezept-Kollektion",
+      "recipes": [1, 2]
+    }
+  }
 ]
