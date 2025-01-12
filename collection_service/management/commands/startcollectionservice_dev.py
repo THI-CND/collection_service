@@ -12,18 +12,7 @@ class Command(BaseCommand):
 
         # Befehle für Uvicorn (REST) und gRPC
     
-    rest_command = [
-            "gunicorn",
-            "config.asgi:application",
-            "-k",
-            "uvicorn_worker.UvicornWorker",
-            "--bind",
-            f"0.0.0.0:{rest_port}",
-            "--workers",
-            str(4),
-            "--access-logfile", "-",
-            "--log-level", "info",
-        ]
+    rest_command = ['python', 'manage.py', 'runserver', f'0.0.0.0:{rest_port}']
     grpc_command = ["python", "manage.py", "grpcrunserver", f"0.0.0.0:{grpc_port}"]
     
 

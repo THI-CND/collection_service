@@ -10,8 +10,8 @@ import json
 class CollectionServiceTests(TestCase):
     def setUp(self):
         self.user = 'testuser'
-        self.recipe1 = 1
-        self.recipe2 = 2
+        self.recipe1 = "1"
+        self.recipe2 = "2"
         self.collection = Collection.objects.create(
             name='Test Collection',
             author=self.user,

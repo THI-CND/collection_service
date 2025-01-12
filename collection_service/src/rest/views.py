@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from ..models import Collection
 from ..serializers import CollectionSerializer
 from .rest_service import create_collection, update_collection, delete_collection, collection_add_recipe, collection_remove_recipe
-from ..grpc.grpc_recipe_client import RecipeGrpcClient, get_associated_tags
+from ..grpc.grpc_recipe_client import RecipeGrpcClient
 
 class CollectionView(APIView):
     def get(self, request):
@@ -42,23 +42,32 @@ class CollectionRecipeView(APIView):
 class CollectionTagView(APIView):
     def get(self, request, id):
         collection = get_object_or_404(Collection, id=id)
-        print(collection)
-        recipe_ids = collection.recipes
-        print(recipe_ids)
-        client = get_associated_tags("887fcbb3-a4dd-4493-81d9-6ce76e554808")
-        #client = RecipeGrpcClient(host='recipe_service', port=9098)
-        recipe_tags = client.get_recipe_tags(recipe_ids)
-        print(recipe_tags)
-        # recipe_tags = []
-        # for recipe_id in recipe_ids:
-        #     tags = client.get_recipe_tags(recipe_id)
-        #     print(tags)
-        #     recipe_tags.extend(tags)
-        #     print(recipe_tags)
+
+        if not collection.recipes:
+            return Response({"detail": "No recipes in the collection"}, status=status.HTTP_204_NO_CONTENT)
         
-        #client = RecipeGrpcClient()
-        #recipe_tags = client.get_recipe_tags(recipe_ids)
-        #recipe_tags = ["Food"]
-        if not recipe_tags:
+        client = RecipeGrpcClient()
+        all_tags = []
+        intersection_tags = None
+        
+        for recipe_id in collection.recipes:
+            tags = client.get_recipe_tags(recipe_id)
+            if not tags:
+                continue
+            all_tags.append(tags['union'])
+            if intersection_tags is None:
+                intersection_tags = set(tags['intersection'])
+            else:
+                intersection_tags &= set(tags['intersection'])
+
+        union_tags = set().union(*all_tags)
+
+        result = {
+            "intersection": list(intersection_tags),
+            "union": list(union_tags)
+        }
+        if not result:
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return JsonResponse(recipe_tags, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+    
+   
