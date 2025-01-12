@@ -271,7 +271,7 @@ publishEvent('collection.created', {
 
 ### Datenbank
 
-Der Collection Service verwendet eine relationale Datenbank zur Speicherung der Sammlungen und Rezepte.
+Der Collection Service verwendet eine Datenbank zur Speicherung der Sammlungen und Rezepte.
 
 #### Tabellen
 

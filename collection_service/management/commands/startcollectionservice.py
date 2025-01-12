@@ -2,9 +2,10 @@ from django.core.management.base import BaseCommand
 from subprocess import Popen, TimeoutExpired
 from sys import stdout, stderr
 from django.conf import settings
-from django.core.management import call_command
 import signal
 import time
+
+# Management command for production to start the Django REST server with Uvicorn and the gRPC server
 class Command(BaseCommand):
     help = "Starts the Django REST server with Uvicorn and the gRPC server."
 
@@ -25,15 +26,15 @@ class Command(BaseCommand):
             "--access-logfile", "-",
             "--log-level", "info",
         ]
-    grpc_command = ["python", "manage.py", "grpcrunserver", f"0.0.0.0:{grpc_port}"]
-    
+    grpc_command = [
+            "python",
+            "manage.py",
+            "grpcrunserver",
+            f"0.0.0.0:{grpc_port}",
+        ]
 
 
     def handle(self, *args, **options):
-        
-        # Migrationen ausführen
-        self.stdout.write("Running migrations...")
-        call_command('migrate')
 
         # Prozesse starten
         rest_process = Popen(self.rest_command, stdout=stdout, stderr=stderr)

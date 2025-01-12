@@ -2,6 +2,9 @@ import grpc
 from .recipe_pb2 import RecipeIdRequest
 from .recipe_pb2_grpc import RecipeServiceStub
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 class RecipeGrpcClient:
     def __init__(self):
@@ -21,5 +24,8 @@ class RecipeGrpcClient:
         except grpc.RpcError as e:
             if e.code() == grpc.StatusCode.NOT_FOUND:
                 return None
+            elif e.code() == grpc.StatusCode.UNAVAILABLE:
+                logger.error("Recipe gRPC server is unavailable. Please check the server status.")
+                raise e
             else:
                 raise e

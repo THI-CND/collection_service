@@ -25,8 +25,6 @@ COPY . .
 CMD sh -c "\
   echo 'Running migrations...' && \
   python manage.py migrate && \
-  echo 'Checking if default data needs to be loaded...' && \
-  python manage.py shell -c \"exec(open('load_default_data.py').read())\" && \
   echo 'Starting the Django server and the grpc server...' && \
   python manage.py startcollectionservice\
 "

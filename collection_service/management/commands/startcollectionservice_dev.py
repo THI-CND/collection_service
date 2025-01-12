@@ -6,6 +6,8 @@ from sys import stdout, stderr
 from django.conf import settings
 import signal
 import time
+
+# Management command for development to start the Django REST server with Uvicorn and the gRPC server
 class Command(BaseCommand):
     help = "Starts the Django REST server with Uvicorn and the gRPC server."
 

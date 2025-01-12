@@ -1,14 +1,8 @@
-#noch zu konfigurieren
 name: Python Tests
 
 on:
   pull_request:
     branches:
-      - 'next'
-
-  push:
-    branches:
-      - main
       - next
 
 jobs:
@@ -31,6 +25,6 @@ jobs:
       - name: Run Django Tests
         env:
           DJANGO_SETTINGS_MODULE: config.settings.test
-          SECRET_KEY_DJANGO: django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
+          SECRET_KEY_DJANGO: ${{ secrets.SECRET_KEY_DJANGO }}
         run: |
           python manage.py test
