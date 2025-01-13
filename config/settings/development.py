@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = True
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", "collection-service.k8s.bieggerm.com"]
 
 # Database
 DATABASES = {
