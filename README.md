@@ -287,3 +287,4 @@ Speichert Informationen über die Sammlungen.
 - `description` (str): Beschreibung der Sammlung.
 - `recipes` (Array): Beinhaltete Rezepte.
 
+
