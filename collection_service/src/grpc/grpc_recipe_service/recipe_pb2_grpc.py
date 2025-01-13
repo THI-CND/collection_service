@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import collection_service.src.grpc.recipe_pb2 as recipe__pb2
+import collection_service.src.grpc.grpc_recipe_service.recipe_pb2 as recipe__pb2
 
 GRPC_GENERATED_VERSION = '1.68.1'
 GRPC_VERSION = grpc.__version__

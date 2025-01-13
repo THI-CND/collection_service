@@ -5,7 +5,7 @@ from rest_framework import status
 from ..rabbitmq.rabbitmq_sender import publish_event
 from ..models import Collection
 from ..serializers import CollectionSerializer
-from ..grpc.grpc_recipe_client import RecipeGrpcClient
+from ..grpc.grpc_recipe_service.grpc_recipe_client import RecipeGrpcClient
 import grpc
 import json
 import logging
@@ -149,7 +149,6 @@ def collection_remove_recipe(request, id):
         return JsonResponse({"status": "removed"}, status=status.HTTP_200_OK)
     else:
         return JsonResponse({"error": "Recipe not found in collection"}, status=status.HTTP_404_NOT_FOUND)
-    
 
 def collection_get_tags(request, id):
     collection = get_object_or_404(Collection, id=id)
@@ -159,47 +158,10 @@ def collection_get_tags(request, id):
             {"detail": "No recipes in the collection"},
             status=status.HTTP_200_OK
         )
-    
-    client = RecipeGrpcClient()
-    all_tags = []
-    intersection_tags = None
-    
-    for recipe_id in collection.recipes:
-        try:
-            tags = client.get_recipe_tags(recipe_id)
-        except grpc.RpcError as e:
-            if e.code() == grpc.StatusCode.UNAVAILABLE:
-                logger.error("Recipe gRPC server is unavailable.")
-                return JsonResponse(
-                    {"detail": "Recipe gRPC server is unavailable. Please try again later."},
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE
-                )
-            else:
-                logger.exception("Error while fetching tags from gRPC server.")
-                return JsonResponse(
-                    {"detail": f"An error occurred while fetching tags: {e.details()}"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-        
-        if not tags:
-            continue
-        
-        all_tags.append(tags['union'])
-        
-        if intersection_tags is None:
-            intersection_tags = set(tags['intersection'])
-        else:
-            intersection_tags &= set(tags['intersection'])
 
-    union_tags = set().union(*all_tags)
-
-    if intersection_tags is None:
-        intersection_tags = set()
-
-    result = {
-        "intersection": list(intersection_tags),
-        "union": list(union_tags)
-    }
+    result = process_tags(collection)
+    if isinstance(result, JsonResponse):
+        return result
 
     if not result["intersection"] and not result["union"]:
         return JsonResponse(
@@ -208,3 +170,50 @@ def collection_get_tags(request, id):
         )
 
     return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+
+def process_tags(collection):
+    client = RecipeGrpcClient()
+    all_tags = []
+    intersection_tags = None
+
+    for recipe_id in collection.recipes:
+        try:
+            tags = client.get_recipe_tags(recipe_id)
+            if not tags:
+                continue
+            all_tags.append(tags['union'])
+            if intersection_tags is None:
+                intersection_tags = set(tags['intersection'])
+            else:
+                intersection_tags &= set(tags['intersection'])
+        except grpc.RpcError as e:
+            return handle_grpc_error(e)
+
+    union_tags = set().union(*all_tags)
+    if intersection_tags is None:
+        intersection_tags = set()
+
+    return {
+        "intersection": list(intersection_tags),
+        "union": list(union_tags)
+    }
+
+def handle_grpc_error(e):
+    if e.code() == grpc.StatusCode.UNAVAILABLE:
+        logger.error("Recipe gRPC server is unavailable.")
+        return JsonResponse(
+            {"detail": "Recipe gRPC server is unavailable. Please try again later."},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+    elif e.code() == grpc.StatusCode.UNKNOWN:
+        logger.error("Application error processing RPC.")
+        return JsonResponse(
+            {"detail": "Application error processing RPC. Please try again later."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    else:
+        logger.exception("Error while fetching tags from gRPC server.")
+        return JsonResponse(
+            {"detail": f"An error occurred while fetching tags: {e.details()}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
