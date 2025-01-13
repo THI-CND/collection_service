@@ -286,3 +286,4 @@ Speichert Informationen über die Sammlungen.
 - `author` (str): Autor der Sammlung.
 - `description` (str): Beschreibung der Sammlung.
 - `recipes` (Array): Beinhaltete Rezepte.
+
