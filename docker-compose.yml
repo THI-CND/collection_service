@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    image: rabbitmq:4.0.3-management
+    image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -15,15 +15,25 @@ services:
       timeout: 30s
       retries: 5
 
+  postgres_db:
+  image: postgres:17.0
+  ports:
+    - "5432:5432"
+  volumes:
+    - postgres_data:/var/lib/postgresql/data
+  environment:
+    POSTGRES_DB: collection
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: password
+
   collection-service:
     image: ghcr.io/thi-cnd/collection_service:latest
-    volumes:
-      - ./collection_service:/code
     ports:
       - "8000:8000" # Django REST-Server Port
       - "50051:50051" # gRPC-Server Port
     environment:
       SECRET_KEY_DJANGO: django-insecure-vm$+=b8+s&54m6*yz*h&7m2b0nq_+ujg30akgs%+v5jw!p_=xg
+      DJANGO_SETTINGS_MODULE: config.settings.development
       DB_NAME: collection
       DB_USER: postgres
       DB_PASSWORD: password
@@ -35,24 +45,14 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_EXCHANGE: recipemanagement
       RABBITMQ_ROUTING_KEYS_COLLECTION: collection.created,collection.updated,collection.deleted
-      USE_TEST_DB: False #Test Database
+      GRPC_HOST_RECIPE_SERVICE: recipe-service # Only needed for Get-collection-tags-request; if the recipe service is unavailable, everything else will still run (soft fail)
+      GRPC_PORT_RECIPE_SERVICE: 9090
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_started
       rabbitmq:
         condition: service_healthy
-
-  postgres_db:
-    image: postgres:17.0
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: collection
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
 
 volumes:
   postgres_data:

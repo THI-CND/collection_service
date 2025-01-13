@@ -13,7 +13,6 @@ class CollectionView(APIView):
     def post(self, request):
         return create_collection(request)
     
-
 class CollectionIDView(APIView):
     def get(self, request, id):
         return get_collection_by_id(request, id)
