@@ -4,7 +4,7 @@
 
 ## Übersicht
 
-Der **Collection Service** bietet eine zentrale Verwaltung für Rezept-Sammlungen, die Benutzern die Erstellung, Bearbeitung und Organisation ihrer Sammlungen ermöglicht. Er unterstützt sowohl REST- als auch gRPC-Schnittstellen und integriert RabbitMQ zur Ereignisbenachrichtigung. Eine PostgreSQL-Datenbank dient als Datenspeicher.
+Der **Collection Service** bietet eine zentrale Verwaltung für Rezept-Sammlungen, die Benutzern die Erstellung, Bearbeitung und Organisation ihrer Sammlungen ermöglicht. Er unterstützt sowohl REST- als auch gRPC-Schnittstellen und integriert RabbitMQ als Message Broker zur Ereignisbenachrichtigung. Eine PostgreSQL-Datenbank dient als Datenspeicher.
 
 ## Installation und Start
 
@@ -71,11 +71,12 @@ Um den Collection Service auszuführen sind folgende Tools erforderlich:
 ### Starten mit Docker
 
 1.  **Repository klonen**  
-     Klone das Repository in das gewünschte Verzeichnis:
+     Klone das Repository in das gewünschte Verzeichnis und navigiere in den Ordner:
 
     ```bash
     git clone https://github.com/THI-CND/collection_service.git
-    cd <Verzeichnis-des-Repositorys>
+
+    cd collection_service
     ```
 
 2.  **Django Secret Key generieren**  
@@ -318,8 +319,6 @@ Holt die Tags einer Sammlung.
 **Beispiel:**
 GET "http://localhost:8000/api/v2/collections/1/tags/"
 
-Response:
-
 ```json
 {
   "intersection": ["tag1", "tag2"],
@@ -422,7 +421,7 @@ Wird ausgelöst, wenn eine Sammlung gelöscht wird.
 }
 ```
 
-## Datenmodell
+## Datenmodell Collections
 
 Zur Speicherung der Sammlungen wird folgendes Modell verwendet:
 
