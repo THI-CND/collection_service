@@ -41,7 +41,7 @@ Um den Collection Service auszuführen sind folgende Tools erforderlich:
    python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
    ```
 
-   Kopiere den generierten Schlüssel und nutze den folgenden Befehl im Verzeichnis des Projekts, um eine [.env](http://_vscodecontentref_/0)-Datei im Projektverzeichnis zu erstellen und den generierten Schlüssel hinzuzufügen:
+   Kopiere den generierten Schlüssel und nutze den folgenden Befehl im Verzeichnis des Projekts, um eine **.env**-Datei im Projektverzeichnis zu erstellen und den generierten Schlüssel hinzuzufügen:
 
    ```bash
    echo "SECRET_KEY_DJANGO=your-secret-key" > .env
@@ -86,7 +86,7 @@ Um den Collection Service auszuführen sind folgende Tools erforderlich:
     python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
     ```
 
-    Kopiere den generierten Schlüssel und füge ihn in die Umgebungsvariable `SECRET_KEY_DJANGO` in der [docker-compose.yml](http://_vscodecontentref_/0)-Datei ein.
+    Kopiere den generierten Schlüssel und füge ihn in die Umgebungsvariable `SECRET_KEY_DJANGO` in der [docker-compose.yml]([http://_vscodecontentref_/0](https://github.com/THI-CND/collection_service/blob/next/docker-compose.yml))-Datei ein.
 
 3.  **Docker Compose starten**  
     Stelle sicher, dass Docker installiert und betriebsbereit ist. Navigiere in den Projektordner und starte alle notwendigen Dienste mit dem Befehl:
