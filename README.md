@@ -432,5 +432,3 @@ Zur Speicherung der Sammlungen wird folgendes Modell verwendet:
 | author      | str   | Autor der Sammlung         |
 | description | str   | Beschreibung der Sammlung  |
 | recipes     | array | Beinhaltete Rezept-IDs     |
-
-
