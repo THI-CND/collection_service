@@ -43,7 +43,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 GRPC_FRAMEWORK = {
-    'ROOT_HANDLERS_HOOK': 'config.grpc_handlers.grpc_handlers',
+    'ROOT_HANDLERS_HOOK': 'collection_service.src.grpc.grpc_handlers.grpc_handlers',
 }
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'

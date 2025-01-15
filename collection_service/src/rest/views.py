@@ -1,9 +1,4 @@
-from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework import status
-from rest_framework.response import Response
-from ..models import Collection
-from ..serializers import CollectionSerializer
 from .rest_service import create_collection, update_collection, delete_collection, collection_add_recipe, collection_remove_recipe, collection_get_tags, get_collections, get_collection_by_id
 
 class CollectionView(APIView):

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django_grpc_framework import proto_serializers
-from ..src.grpc import collection_pb2
+from collection_service.src.grpc.stubs import collection_pb2
 from .models import Collection
 
 class CollectionSerializer(serializers.ModelSerializer):

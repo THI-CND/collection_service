@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import collection_service.src.grpc.collection_pb2 as collection__pb2
+import collection_service.src.grpc.stubs.collection_pb2 as collection__pb2
 
 GRPC_GENERATED_VERSION = '1.68.1'
 GRPC_VERSION = grpc.__version__
