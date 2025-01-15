@@ -417,7 +417,7 @@ Wird ausgelöst, wenn eine Sammlung gelöscht wird.
   "name": "Neue Sammlung",
   "author": "testuser",
   "description": "Beschreibung der Sammlung",
-  "recipes": [1, 2]
+  "recipes": ["1", "2"]
 }
 ```
 
