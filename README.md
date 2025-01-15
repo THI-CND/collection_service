@@ -328,7 +328,7 @@ GET "http://localhost:8000/api/v2/collections/1/tags/"
 
 ### gRPC API
 
-```java
+```python
 syntax = "proto3";
 
 package collection_service;
@@ -353,7 +353,7 @@ message CreateCollectionRequest {
     string name = 1;
     string author = 2;
     string description = 3;
-    repeated int32 recipes = 4;
+    repeated string recipes = 4;
 }
 
 message UpdateCollectionRequest {
@@ -361,7 +361,7 @@ message UpdateCollectionRequest {
     string author = 2;
     string name = 3;
     string description = 4;
-    repeated int32 recipes = 5;
+    repeated string recipes = 5;
 }
 
 message DeleteCollectionRequest {
@@ -371,7 +371,7 @@ message DeleteCollectionRequest {
 
 message ModifyRecipeRequest {
     int32 id = 1;
-    int32 recipe_id = 2;
+    string recipe_id = 2;
 }
 
 message CollectionResponse {
@@ -379,7 +379,7 @@ message CollectionResponse {
     string name = 2;
     string author = 3;
     string description = 4;
-    repeated int32 recipes = 5;
+    repeated string recipes = 5;
 }
 
 message ListCollectionResponse {
