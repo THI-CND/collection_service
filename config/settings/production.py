@@ -15,7 +15,7 @@ DATABASES = {
         }
     }
 
-# RabbitMQ-Konfiguration
+# RabbitMQ-Configuration
 RABBITMQ_USER = env("RABBITMQ_USER")
 RABBITMQ_PASSWORD = env("RABBITMQ_PASSWORD")
 RABBITMQ_HOST = env("RABBITMQ_HOST")
@@ -31,6 +31,6 @@ RABBITMQ_ROUTING_KEYS = {
     'collection_deleted': routing_keys_list[2],
 }
 
-# GRPC-Konfiguration Recipe-Service
+# GRPC-Configuration Recipe-Service
 GRPC_HOST_RECIPE_SERVICE = env("GRPC_HOST_RECIPE_SERVICE")
 GRPC_PORT_RECIPE_SERVICE = env("GRPC_PORT_RECIPE_SERVICE")

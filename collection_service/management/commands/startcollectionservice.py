@@ -12,7 +12,7 @@ class Command(BaseCommand):
     grpc_port = settings.GRPC_SERVER_PORT
     rest_port = settings.REST_SERVER_PORT
 
-        # Befehle für Uvicorn (REST) und gRPC
+        # Command for Uvicorn (REST) und gRPC
     
     rest_command = [
             "gunicorn",
@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        # Prozesse starten
+        # Start both servers
         rest_process = Popen(self.rest_command, stdout=stdout, stderr=stderr)
         grpc_process = Popen(self.grpc_command, stdout=stdout, stderr=stderr)
 
@@ -51,7 +51,7 @@ class Command(BaseCommand):
             rest_process.send_signal(signal.SIGTERM)
             grpc_process.terminate()
 
-            # Warten, bis die Prozesse beendet sind
+            # Wait for both processes to terminate
             processes = [rest_process, grpc_process]
             for proc in processes:
                 try:

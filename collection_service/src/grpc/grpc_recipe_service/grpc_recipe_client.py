@@ -1,6 +1,6 @@
 import grpc
-from .recipe_pb2 import RecipeIdRequest
-from .recipe_pb2_grpc import RecipeServiceStub
+from collection_service.src.grpc.stubs.recipe_pb2 import RecipeIdRequest
+from collection_service.src.grpc.stubs.recipe_pb2_grpc import RecipeServiceStub
 from django.conf import settings
 import logging
 
