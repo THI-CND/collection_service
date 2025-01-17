@@ -1,5 +1,4 @@
 import pika
-from pika.exceptions import AMQPConnectionError
 from django.conf import settings
 import logging
 

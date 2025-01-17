@@ -2,7 +2,7 @@ import grpc
 from django_grpc_framework.services import Service
 from ..models import Collection
 from ..serializers import CollectionProtoSerializer, CollectionSerializer
-from collection_service.src.grpc.collection_pb2 import ListCollectionResponse, DeleteCollectionResponse, ModifyRecipeResponse
+from collection_service.src.grpc.stubs.collection_pb2 import ListCollectionResponse, DeleteCollectionResponse, ModifyRecipeResponse
 from collection_service.src.rabbitmq.rabbitmq_sender import publish_event
 import logging
 

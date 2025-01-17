@@ -1,5 +1,4 @@
 import pika, json
-from pika.exceptions import AMQPConnectionError
 from django.conf import settings
 from .rabbitmq_config import rabbitmq_connection
 
